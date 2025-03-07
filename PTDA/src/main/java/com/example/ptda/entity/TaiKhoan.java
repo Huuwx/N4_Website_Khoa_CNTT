@@ -11,7 +11,7 @@ public class TaiKhoan {
     @Column(name = "tai_khoan", unique = true, nullable = false)
     private String taiKhoan;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "idgv", nullable = false)
     private ThongTinGiangVien giangVien;
 

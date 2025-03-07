@@ -19,4 +19,7 @@ public class BaiViet {
     @ManyToOne
     @JoinColumn(name = "id_danhmuc", nullable = false)
     private DanhMuc danhMuc;
+    @ManyToOne
+    @JoinColumn(name = "id_taikhoan", nullable = false)
+    private TaiKhoan taiKhoan;
 }
