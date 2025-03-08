@@ -9,7 +9,7 @@ export default function App() {
   return (
     <div className="container mx-auto p-4">
       <Routes>
-        <Route path="/" element={<LienHeDetailWD />} />
+        <Route path="/" element={<LienHeForm />} />
       </Routes>
     </div>
   );
