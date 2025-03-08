@@ -1,0 +1,1 @@
+// cần biến global thì code ở đây
