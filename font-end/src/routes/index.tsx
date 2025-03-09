@@ -9,6 +9,9 @@ import MainLayout from '@/components/layout/MainLayout';
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'));
 const TeacherPage = lazy(() => import('@/pages/Teacher'));
+const ImageManagement = lazy(() => import('@/pages/ImageManagement'));
+const AdminPage = lazy(() => import('@/pages/AdminPage'));
+const CategoryManagement = lazy(() => import('@/pages/CategoryManagement'));
 
 // const AboutPage = lazy(() => import('@/pages/AboutPage'));
 // const AcademicsPage = lazy(() => import('@/pages/AcademicsPage'));
@@ -16,29 +19,30 @@ const TeacherPage = lazy(() => import('@/pages/Teacher'));
 // const ContactPage = lazy(() => import('@/pages/ContactPage'));
 // const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
-const AppRoutes = () => {
+function AppRoutes() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<CategoryManagement />} />
           {/* <Route path="about" element={<AboutPage />} />
-          <Route path="academics" element={<AcademicsPage />} />
-          <Route path="admissions" element={<AdmissionsPage />} />
-          <Route path="contact" element={<ContactPage />} />
-          <Route path="*" element={<NotFoundPage />} /> */}
+            <Route path="academics" element={<AcademicsPage />} />
+            <Route path="admissions" element={<AdmissionsPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="*" element={<NotFoundPage />} /> */}
           <Route path="articles" element={<ArticleManagement />} />
           <Route path="teachers" element={<TeacherPage />} />
-
-           {/* Ví dụ sau có Admin routes */}
-          {/* <Route path="/admin" element={<AdminLayout />}>
-            <Route path="articles" element={<ArticleManagement />} />
-             thêm các route khác ở đây
-          </Route> */}
+          {/* Ví dụ sau có Admin routes */}
+          <Route path="admin" element={<AdminPage />}>
+              <Route path="articles" element={<ArticleManagement />} />
+              <Route path='images' element={<ImageManagement/>} />
+              <Route path='categories' element={<CategoryManagement/>} />
+               thêm các route khác ở đây
+            </Route>
         </Route>
       </Routes>
     </Suspense>
   );
-};
+}
 
 export default AppRoutes;

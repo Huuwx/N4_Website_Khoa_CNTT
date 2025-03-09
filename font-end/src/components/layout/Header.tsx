@@ -1,98 +1,170 @@
-import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect, useRef } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+
+interface HeaderProps {
+  isAdmin: boolean; // Nhận prop từ MainLayout
+}
 
 const navigation = [
-  { name: 'Trang chủ', href: '/' },
-  { name: 'Giới thiệu', href: '/about' },
-  { name: 'Đào tạo', href: '/academics' },
-  { name: 'Tuyển sinh', href: '/admissions' },
-  { name: 'Liên hệ', href: '/contact' },
+  {
+    name: "TUYỂN SINH",
+    href: "/tuyen-sinh",
+    color: "text-red-600",
+    submenu: [
+      { name: "CHẤT LƯỢNG CAO", href: "/chat-luong-cao" },
+      { name: "ĐẠI HỌC", href: "/dai-hoc" },
+      { name: "THẠC SĨ", href: "/thac-si" },
+      { name: "TIẾN SĨ", href: "/tien-si" },
+    ],
+  },
+  {
+    name: "GIỚI THIỆU",
+    href: "/gioi-thieu",
+    submenu: [
+      { name: "TỔNG QUAN VỀ KHOA", href: "/tong-quan-ve-khoa" },
+      { name: "CƠ CẤU TỔ CHỨC", href: "/co-cau-to-chuc" },
+      { name: "ĐỘI NGŨ GIẢNG VIÊN", href: "/doi-ngu-giang-vien" },
+    ],
+  },
+  {
+    name: "DOANH NGHIỆP",
+    href: "/doanh-nghiep",
+    submenu: [
+      { name: "CÁC ĐỐI TÁC", href: "/doi-tac" },
+      { name: "THỰC TẬP DOANH NGHIỆP", href: "/thuc-tap-doanh-nghiep" },
+      { name: "VIỆC LÀM", href: "/viec-lam" },
+      { name: "HỌC BỔNG", href: "/hoc-bong" },
+    ],
+  },
+  {
+    name: "ĐÀO TẠO",
+    href: "/dao-tao",
+    submenu: [
+      { name: "QUY CHẾ ĐÀO TẠO", href: "/quy-che-dao-tao" },
+      { name: "MÔ TẢ CHƯƠNG TRÌNH ĐÀO TẠO", href: "/mo-ta-chuong-trinh-dao-tao" },
+    ],
+  },
+  {
+    name: "KHOA HỌC CÔNG NGHỆ",
+    href: "/khoa-hoc-cong-nghe",
+    submenu: [
+      { name: "CÔNG BỐ KHOA HỌC", href: "/cong-bo-khoa-hoc" },
+      { name: "ĐỀ TÀI NGHIÊN CỨU KHOA HỌC", href: "/de-tai-nghien-cuu" },
+      { name: "TRIỂN KHAI ỨNG DỤNG", href: "/trien-khai-ung-dung" },
+      { name: "CÁC NHÓM NGHIÊN CỨU", href: "/cac-nhom-nghien-cuu" },
+      { name: "NCKH SINH VIÊN", href: "/nckh-sinh-vien" },
+    ],
+  },
+  {
+    name: "HỢP TÁC ĐỐI NGOẠI",
+    href: "/hop-tac-doi-ngoai",
+    submenu: [
+      { name: "CHƯƠNG TRÌNH HỢP TÁC", href: "/chuong-trinh-hop-tac" },
+      { name: "ĐỐI TÁC QUỐC TẾ", href: "/doi-tac-quoc-te" },
+    ],
+  },
 ];
 
-const Header = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const adminNavigation = [
+  {
+    name: "QUẢN LÝ NGƯỜI DÙNG",
+    href: "/admin/users",
+  },
+  {
+    name: "QUẢN LÝ BÀI VIẾT",
+    href: "/admin/articles",
+  },
+  {
+    name: "CÀI ĐẶT HỆ THỐNG",
+    href: "/admin/settings",
+  },
+];
+
+const Header: React.FC<HeaderProps> = ({ isAdmin }) => {
+  const [activeItem, setActiveItem] = useState("TUYỂN SINH");
+  const [hoveredItem, setHoveredItem] = useState("");
+  const [underlineStyle, setUnderlineStyle] = useState({});
+  const navRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const activeIndex = navigation.findIndex((item) => item.name === (hoveredItem || activeItem));
+    if (navRefs.current[activeIndex]) {
+      const { offsetLeft, offsetWidth } = navRefs.current[activeIndex]!;
+      setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
+    }
+  }, [hoveredItem, activeItem]);
 
   return (
-    <header className="bg-white shadow-md">
-      <nav className="container-custom mx-auto py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
-              <img
-                className="h-10 w-auto"
-                src="/assets/images/university-logo.svg"
-                alt="CSE University Logo"
-              />
-              <span className="ml-3 text-xl font-heading font-bold text-primary">
-                CSE University
-              </span>
-            </Link>
-          </div>
+    <header className="font-sans bg-white shadow-md relative z-10 sticky top-0">
+      {/* Thanh trên cùng */}
+      <div className="bg-[#1a3365] text-white text-sm py-2 px-4 flex justify-end items-center">
+        <Link to="/login" className="ml-5 px-4 py-2 rounded hover:bg-white/10 transition-colors">
+          ĐĂNG NHẬP
+        </Link>
+        <Link to="/contact" className="ml-5 px-4 py-2 rounded bg-[#e53935] hover:bg-[#c22e2a] transition-colors">
+          LIÊN HỆ
+        </Link>
+      </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-6">
-            {navigation.map((item) => (
+      {/* Thanh điều hướng chính */}
+      <div className="flex justify-between items-center p-5">
+        <div className="flex items-center">
+          <img src="/logo_tlu.png" alt="Logo TLU" className="h-16 mr-3" />
+          <div>
+            <h1 className="text-xl font-semibold text-[#1a3365]">KHOA CÔNG NGHỆ THÔNG TIN</h1>
+            <p className="text-xs text-gray-600">Faculty of Computer Science and Engineering - Thuyloi University</p>
+          </div>
+        </div>
+
+        <nav className="hidden md:flex items-center relative">
+          {navigation.map((item, index) => (
+            <div
+              className="relative group"
+              key={item.name}
+              onMouseEnter={() => setHoveredItem(item.name)}
+              onMouseLeave={() => setHoveredItem("")}
+              ref={(el) => (navRefs.current[index] = el)}
+            >
               <NavLink
-                key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `px-2 py-1 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary border-b-2 border-primary'
-                      : 'text-gray-700 hover:text-primary'
+                  `mx-6 font-medium hover:text-red-600 transition-colors ${item.color || "text-[#1a3365]"} ${
+                    isActive ? "border-b-2 border-[#1a3365]" : ""
                   }`
                 }
               >
                 {item.name}
               </NavLink>
-            ))}
-            <button className="btn btn-primary ml-4">Đăng nhập</button>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              type="button"
-              className="text-gray-700 hover:text-primary"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <span className="sr-only">Open main menu</span>
-              {mobileMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+              {item.submenu.length > 0 && (
+                <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                  {item.submenu.map((subitem) => (
+                    <Link
+                      key={subitem.name}
+                      to={subitem.href}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    >
+                      {subitem.name}
+                    </Link>
+                  ))}
+                </div>
               )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-2 border-t border-gray-200">
-            <div className="space-y-1 px-2 pb-3">
-              {navigation.map((item) => (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md text-base font-medium ${
-                      isActive
-                        ? 'bg-primary-light text-white'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-primary'
-                    }`
-                  }
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </NavLink>
-              ))}
-              <button className="mt-2 w-full btn btn-primary">Đăng nhập</button>
             </div>
-          </div>
-        )}
-      </nav>
+          ))}
+
+          {/* Hiển thị menu admin nếu là admin */}
+          {isAdmin &&
+            adminNavigation.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                className="mx-6 font-medium text-red-600 hover:text-red-800 transition-colors"
+              >
+                {item.name}
+              </NavLink>
+            ))}
+        </nav>
+      </div>
     </header>
   );
 };

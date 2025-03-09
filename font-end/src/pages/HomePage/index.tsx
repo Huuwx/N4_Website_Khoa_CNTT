@@ -1,80 +1,109 @@
-import { Link } from 'react-router-dom';
-// import HeroSection from './components/HeroSection';
-// import NewsSection from './components/NewsSection';
-// import EventsSection from './components/EventsSection';
+import React, { useState } from "react";
+
+const tabs = [
+  {
+    id: 1,
+    title: "Môi trường giáo dục",
+    icon: "",
+    content:
+      "Trở thành sinh viên của khoa, các bạn có một môi trường giáo dục tốt: Có các phòng học, phòng thí nghiệm, và trang thiết bị tối ưu để hỗ trợ việc giảng dạy và nghiên cứu trong lĩnh vực Công nghệ thông tin; Có các giảng viên giàu kinh nghiệm, có trình độ chuyên môn cao và đam mê trong lĩnh vực Công nghệ thông tin. Các giảng viên cung cấp kiến thức mới nhất, hướng dẫn và hỗ trợ sinh viên trong quá trình học tập; Có chương trình học phong phú và đa dạng, bao gồm cả các môn học lý thuyết và thực hành. Chương trình đáp ứng nhu cầu của ngành Công nghệ thông tin và cập nhật với các xu hướng công nghệ mới; Tạo cơ hội cho sinh viên thực hành và thực tập trong các doanh nghiệp, tổ chức hoặc dự án thực tế; Khuyến khích sự sáng tạo và tư duy độc lập của sinh viên. Cung cấp các hoạt động ngoại khóa, dự án nghiên cứu, và sự hỗ trợ từ cộng đồng sinh viên và giảng viên để thúc đẩy sự phát triển cá nhân và tạo ra những ý tưởng mới; Có mối quan hệ chặt chẽ với các doanh nghiệp trong ngành Công nghệ thông tin, tạo cơ hội cho sinh viên tiếp cận với thực tế công việc, nhận được thông tin về xu hướng công nghệ.",
+  },
+  {
+    id: 2,
+    title: "Chương trình đào tạo",
+    icon: "",
+    content:
+      "Chương trình đào tạo các ngành thuộc nhóm ngành CNTT của khoa có các đặc điểm sau: (1) có một nền tảng kiến thức rộng về các lĩnh vực liên quan đến Công nghệ thông tin, bao gồm các học phần cơ bản như lập trình, cơ sở dữ liệu, mạng máy tính, hệ điều hành, thuật toán, và công nghệ phần mềm; (2) có tính thực tiễn và ứng dụng, đảm bảo sinh viên được tiếp cận với các công nghệ và công cụ thực tế trong lĩnh vực Công nghệ thông tin. Thông qua các dự án thực hành, thực tập, và các hoạt động ngoại khóa, sinh viên có cơ hội áp dụng kiến thức vào thực tế, rèn kỹ năng thực hành và tìm hiểu về các xu hướng mới nhất trong ngành; (3) không chỉ trang bị kiến thức cơ bản và lý thuyết, mà chương trình còn giúp sinh viên có cơ hội áp dụng những kiến thức đó vào các dự án thực tế và bài tập thực hành; và (4) có mối liên kết mạnh mẽ với doanh nghiệp và ngành nghề.",
+  },
+  {
+    id: 3,
+    title: "Hoạt động sinh viên",
+    icon: "️",
+    content:
+      "Hoạt động sinh viên đóng vai trò quan trọng trong việc phát triển và làm giàu cho trải nghiệm học tập của các sinh viên. Các hoạt động này không chỉ giúp các sinh viên rèn luyện kỹ năng cá nhân, mở rộng kiến thức, mà còn tạo ra những cơ hội giao lưu, hợp tác và xây dựng mạng lưới quan hệ trong cộng đồng sinh viên và xã hội. Đối với hoạt động NCKH, sinh viên có thể tham gia vào các dự án nghiên cứu, làm việc cùng với giảng viên và các nhóm nghiên cứu, khám phá và đóng góp vào lĩnh vực chuyên ngành của mình. Bên cạnh đó, các cuộc thi Olympic được tổ chức hàng năm là cơ hội để sinh viên thể hiện khả năng và tài năng của mình trong các lĩnh vực cụ thể. Ngoài ra, Khoa và Nhà trường tạo điều kiện để sinh viên tham gia các hoạt động cộng đồng như tổ chức các chương trình xã hội, tình nguyện, văn hóa và giáo dục cộng đồng, cùng với các hoạt động nhằm xây dựng tinh thần đoàn kết và tạo ra sân chơi vui tươi cho sinh viên. Sinh viên có thể tham gia các câu lạc bộ học tập, văn nghệ, thể thao trường học hoặc tham gia các cuộc thi về CNTT, cuộc thi văn nghệ, các giải thể thao được Khoa và Nhà trường thường xuyên tổ chức.",
+  },
+];
 
 const HomePage = () => {
+  const [activeTab, setActiveTab] = useState(tabs[0].id);
+
   return (
-    <div>
-      {/* <HeroSection /> */}
-      
-      {/* Intro section */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Chào mừng đến với CSE University</h2>
-            <p className="max-w-3xl mx-auto text-gray-600">
-              Chúng tôi cung cấp môi trường học tập xuất sắc với các chương trình đào tạo chất lượng cao, 
-              đội ngũ giảng viên giàu kinh nghiệm và cơ sở vật chất hiện đại.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-primary mb-3">Đào tạo chất lượng</h3>
-              <p className="text-gray-600 mb-4">Các chương trình đào tạo được thiết kế phù hợp với nhu cầu của xã hội và doanh nghiệp.</p>
-              <Link to="/academics" className="text-primary hover:underline font-medium">
-                Tìm hiểu thêm →
-              </Link>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-primary mb-3">Nghiên cứu khoa học</h3>
-              <p className="text-gray-600 mb-4">Thúc đẩy nghiên cứu và đổi mới sáng tạo trong nhiều lĩnh vực khoa học công nghệ.</p>
-              <Link to="/research" className="text-primary hover:underline font-medium">
-                Tìm hiểu thêm →
-              </Link>
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-primary mb-3">Hợp tác quốc tế</h3>
-              <p className="text-gray-600 mb-4">Phát triển mạng lưới hợp tác với các trường đại học và tổ chức quốc tế.</p>
-              <Link to="/international" className="text-primary hover:underline font-medium">
-                Tìm hiểu thêm →
-              </Link>
-            </div>
-          </div>
+    <div className="w-full">
+      {/* Banner */}
+      <div className="relative w-full">
+        <img
+          src="/banner.jpg"
+          alt="Banner"
+          className="w-full h-[300px] object-cover"
+        />
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center bg-white py-3 shadow-md">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`mx-6 px-4 py-2 font-semibold flex items-center gap-2 transition-all ${
+                activeTab === tab.id
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-700"
+              }`}
+            >
+              <span className="text-2xl">{tab.icon}</span> {tab.title}
+            </button>
+          ))}
         </div>
-      </section>
-      
-      {/* Latest news and events */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* <NewsSection />
-            <EventsSection /> */}
-          </div>
+      </div>
+
+      {/* Nội dung chính */}
+      <div className="max-w-6xl mx-auto py-10 px-4">
+        {/* Hiển thị nội dung theo tab */}
+        <div className="p-6 text-gray-500 rounded-lg shadow-md">
+          {tabs.find((tab) => tab.id === activeTab)?.content}
         </div>
-      </section>
-      
-      {/* CTA Section */}
-      <section className="py-16 bg-primary text-white">
-        <div className="container-custom text-center">
-          <h2 className="text-3xl font-bold mb-6">Bắt đầu hành trình học tập của bạn</h2>
-          <p className="max-w-2xl mx-auto mb-8">
-            Đăng ký ngay hôm nay để trở thành một phần của cộng đồng CSE University 
-            và khám phá cơ hội học tập, nghiên cứu và phát triển bản thân.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link to="/admissions" className="btn bg-white text-primary hover:bg-gray-100">
-              Tuyển sinh
-            </Link>
-            <Link to="/contact" className="btn border border-white hover:bg-primary-dark">
-              Liên hệ với chúng tôi
-            </Link>
+
+        {/* Thông báo */}
+        <section className="mt-10">
+          <h2 className="text-lg font-bold border-b-2 border-red-500 pb-2">
+            THÔNG BÁO
+          </h2>
+          <div className="h-32 flex items-center justify-center text-gray-500">
+            Đang cập nhật...
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Tin tức & Sự kiện */}
+        <section className="mt-10">
+          <h2 className="text-lg font-bold border-b-2 border-red-500 pb-2">
+            TIN TỨC & SỰ KIỆN
+          </h2>
+          <div className="h-32 flex items-center justify-center text-gray-500">
+            Đang cập nhật...
+          </div>
+        </section>
+
+       {/* Sinh viên tiêu biểu */}
+        <section className="mt-10">
+          <h2 className="text-lg font-bold border-b-2 border-red-500 pb-2">
+            SINH VIÊN TIÊU BIỂU
+          </h2>
+          <div className="flex mt-2">
+          <div className="w-1/4 bg-gray-300 h-12"></div>
+          <div className="w-3/4 bg-teal-600 h-12"></div>
+          </div>
+        </section>
+
+        {/* Đối tác */}
+        <section className="mt-10">
+          <h2 className="text-lg font-bold border-b-2 border-red-500 pb-2">
+            ĐỐI TÁC
+          </h2>
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            <div className="bg-gray-300 h-12"></div>
+            <div className="bg-red-600 h-12"></div>
+            <div className="bg-blue-500 h-12"></div>
+            <div className="bg-teal-600 h-12"></div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
