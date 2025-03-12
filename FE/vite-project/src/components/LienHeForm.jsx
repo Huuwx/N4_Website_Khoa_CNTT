@@ -11,14 +11,23 @@ export default function ContactForm({ refreshData }) {
     noiDung: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+    const ngayLienHe = new Date().toLocaleDateString("vi-VN");  
+    const formDataWithDate = { ...formData, ngayLienHe };
+  
+    console.log("Dữ liệu gửi lên API:", formDataWithDate); // Kiểm tra dữ liệu trước khi gửi
+  
     try {
-      await api.post("/lien-he", formData);
+      await api.post("/yeu-cau-lien-he", formDataWithDate);
       alert("Gửi yêu cầu liên hệ thành công!");
       setFormData({ hoTen: "", soDienThoai: "", email: "", tieuDe: "", noiDung: "" });
       refreshData();
@@ -26,18 +35,27 @@ export default function ContactForm({ refreshData }) {
       console.error("Lỗi khi gửi liên hệ:", error);
     }
   };
+  
 
   return (
     <div className="container">
-        <HeaderNav />
-        <div className="flex justify-center items-center min-h-screen p-6">
+      <HeaderNav />
+      <div className="flex justify-center items-center min-h-screen p-6">
         <div className="bg-[#5B7C84] p-8 rounded-lg flex w-full max-w-4xl shadow-lg">
-            {/* Form bên trái */}
-            <div className="w-2/3 pr-6">
+          
+          {/* Form bên trái */}
+          <div className="w-2/3 pr-6">
             <h2 className="text-3xl font-bold text-white mb-4">LIÊN HỆ VỚI CHÚNG TÔI</h2>
 
+            {/* Hiển thị thông báo phản hồi */}
+            {message && (
+              <div className={`p-2 mb-3 rounded text-center font-semibold ${message.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
+                {message.text}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
-                <input
+              <input
                 type="text"
                 name="hoTen"
                 placeholder="Họ Tên"
@@ -45,8 +63,8 @@ export default function ContactForm({ refreshData }) {
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
                 required
-                />
-                <input
+              />
+              <input
                 type="text"
                 name="soDienThoai"
                 placeholder="SĐT"
@@ -54,8 +72,8 @@ export default function ContactForm({ refreshData }) {
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
                 required
-                />
-                <input
+              />
+              <input
                 type="email"
                 name="email"
                 placeholder="Email"
@@ -63,38 +81,43 @@ export default function ContactForm({ refreshData }) {
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
                 required
-                />
-                <input
+              />
+              <input
                 type="text"
                 name="tieuDe"
                 placeholder="Tiêu đề"
                 value={formData.tieuDe}
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
-                />
-                <textarea
+              />
+              <textarea
                 name="noiDung"
                 placeholder="Nội dung"
                 value={formData.noiDung}
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3 h-24"
                 required
-                />
+              />
 
-                <button type="submit" className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800">
-                Gửi
-                </button>
+              <button 
+                type="submit" 
+                className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-800 transition"
+                disabled={loading}
+              >
+                {loading ? "Đang gửi..." : "Gửi"}
+              </button>
             </form>
-            </div>
+          </div>
 
-            {/* Ảnh bên phải */}
-            <div className="w-1/3 flex justify-center items-center">
+          {/* Ảnh bên phải */}
+          <div className="w-1/3 flex justify-center items-center">
             <div className="bg-white rounded-full p-4 shadow-lg">
-                <img src=".\src\assets\images\Avatars - Default with Backdrop.png" alt="Avatar" className="w-40 h-40 rounded-full" />
+              <img src=".\src\assets\images\Avatars - Default with Backdrop.png" alt="Avatar" className="w-40 h-40 rounded-full" />
             </div>
-            </div>
+          </div>
+
         </div>
-        </div>
+      </div>
     </div>
   );
 }

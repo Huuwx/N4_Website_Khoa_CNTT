@@ -35,8 +35,8 @@ public class DanhMucServiceImpl implements DanhMucService {
     @Override
     public ResponseDTO<DanhMucDTO> createDanhMuc(DanhMucDTO danhMucDTO) {
         DanhMuc danhMuc = new DanhMuc();
-        danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
-        danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
+        // danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
+        // danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
 
         danhMucRepository.save(danhMuc);
         return new ResponseDTO<>(true, "Tạo danh mục thành công", convertToDTO(danhMuc));
@@ -47,8 +47,8 @@ public class DanhMucServiceImpl implements DanhMucService {
         DanhMuc danhMuc = danhMucRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại!"));
 
-        danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
-        danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
+        // danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
+        // danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
 
         danhMucRepository.save(danhMuc);
         return new ResponseDTO<>(true, "Cập nhật danh mục thành công", convertToDTO(danhMuc));
@@ -65,9 +65,9 @@ public class DanhMucServiceImpl implements DanhMucService {
 
     private DanhMucDTO convertToDTO(DanhMuc danhMuc) {
         DanhMucDTO dto = new DanhMucDTO();
-        dto.setId(danhMuc.getIdDanhMuc());
-        dto.setTenDanhMuc(danhMuc.getTenDanhMuc());
-        dto.setNhomDanhMuc(danhMuc.getNhomDanhMuc());
+        // dto.setId(danhMuc.getIdDanhMuc());
+        // dto.setTenDanhMuc(danhMuc.getTenDanhMuc());
+        // dto.setNhomDanhMuc(danhMuc.getNhomDanhMuc());
         return dto;
     }
 }
