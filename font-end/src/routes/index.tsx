@@ -6,12 +6,13 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import MainLayout from '@/components/layout/MainLayout';
 
 // Lazy loaded pages
-const HomePage = lazy(() => import('@/pages/HomePage'));
+// const HomePage = lazy(() => import('@/pages/HomePage'));
 const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'));
 const TeacherPage = lazy(() => import('@/pages/Teacher'));
 const ImageManagement = lazy(() => import('@/pages/ImageManagement'));
 const AdminPage = lazy(() => import('@/pages/AdminPage'));
 const CategoryManagement = lazy(() => import('@/pages/CategoryManagement'));
+const TeacherProfile = lazy(() => import('@/pages/Profile'));
 
 // const AboutPage = lazy(() => import('@/pages/AboutPage'));
 // const AcademicsPage = lazy(() => import('@/pages/AcademicsPage'));
@@ -32,13 +33,16 @@ function AppRoutes() {
             <Route path="*" element={<NotFoundPage />} /> */}
           <Route path="articles" element={<ArticleManagement />} />
           <Route path="teachers" element={<TeacherPage />} />
+          <Route path="profile" element={<TeacherProfile />} />
           {/* Ví dụ sau có Admin routes */}
           <Route path="admin" element={<AdminPage />}>
-              <Route path="articles" element={<ArticleManagement />} />
-              <Route path='images' element={<ImageManagement/>} />
+              {/* <Route path="articles" element={<ArticleManagement />} />
               <Route path='categories' element={<CategoryManagement/>} />
-               thêm các route khác ở đây
+              <Route path='images' element={<ImageManagement/>} /> */}
             </Route>
+            <Route path="articles" element={<ArticleManagement />} />
+            <Route path='categories' element={<CategoryManagement/>} />
+            <Route path='images' element={<ImageManagement/>} />
         </Route>
       </Routes>
     </Suspense>

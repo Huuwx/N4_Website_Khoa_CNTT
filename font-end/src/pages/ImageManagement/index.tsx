@@ -1,131 +1,260 @@
 import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { faker } from "@faker-js/faker";
-import Pagination from "./components/Pagination";
-import { MagnifyingGlassIcon, TrashIcon, Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
-import ImageConfigModal from "./components/ImageConfigModal"; 
-
-Modal.setAppElement("#root");
+import { FaPlus, FaSearch, FaTrash, FaCog } from "react-icons/fa";
+import ImageConfiguration from "./components/ImageConfiguration";
 
 interface Image {
-  id: number;
-  name: string;
+  id: string;
   url: string;
 }
 
-const generateFakeImages = (num: number): Image[] => {
-  return Array.from({ length: num }, (_, i) => ({
-    id: i + 1,
-    name: `AA${i + 1}`,
-    url: faker.image.url(),
-  }));
-};
-
-const ImageManagement = () => {
+const ImageManagement: React.FC = () => {
   const [images, setImages] = useState<Image[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [imageToDelete, setImageToDelete] = useState<Image | null>(null);
-  const [configModalIsOpen, setConfigModalIsOpen] = useState(false); // Thêm state cho modal cấu hình
+  const [totalPages, setTotalPages] = useState(5);
 
-  const imagesPerPage = 5;
+  // State for modals
+  const [isImageViewOpen, setIsImageViewOpen] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState("");
+  // New state for configuration modal
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setImages(generateFakeImages(12));
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    // Simulating API call to fetch images
+    const fetchImages = () => {
+      const dummyImages: Image[] = [
+        {
+          id: "AA1",
+          url: "https://huongnghiep.hocmai.vn/wp-content/uploads/2022/02/148434662-2961600134114291-582-2356-7538-1631711557.jpg",
+        },
+        {
+          id: "AA2",
+          url: "https://huongnghiep.hocmai.vn/wp-content/uploads/2022/02/148434662-2961600134114291-582-2356-7538-1631711557.jpg",
+        },
+      ];
+      setImages(dummyImages);
+    };
 
-  const handleDelete = (id: number) => {
-    setImages(images.filter((image) => image.id !== id));
-    setModalIsOpen(false);
+    fetchImages();
+  }, [currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
-  const openDeleteModal = (image: Image) => {
-    setImageToDelete(image);
-    setModalIsOpen(true);
+  const handleAddImage = () => {
+    // Implement image upload functionality
+    console.log("Add image clicked");
   };
 
-  const openConfigModal = () => { // Hàm mở modal cấu hình
-    setConfigModalIsOpen(true);
+  const handleViewImage = (url: string) => {
+    setSelectedImageUrl(url);
+    setIsImageViewOpen(true);
   };
 
-  const closeConfigModal = () => { // Hàm đóng modal cấu hình
-    setConfigModalIsOpen(false);
+  const handleDeleteImage = () => {
+    if (imageToDelete) {
+      setImages(images.filter((image) => image.id !== imageToDelete));
+      setIsConfirmDeleteOpen(false);
+    }
   };
 
-  const indexOfLastImage = currentPage * imagesPerPage;
-  const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage);
-  const totalPages = Math.ceil(images.length / imagesPerPage);
+  // New function to handle configuration button click
+  const handleConfigClick = () => {
+    setIsConfigOpen(true);
+  };
+
+  // Function to update images after configuration changes
+  const handleConfigSave = (updatedImages: Image[]) => {
+    setImages(updatedImages);
+    setIsConfigOpen(false);
+  };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+    <div className="container mx-auto p-6">
+      <h1 className="text-4xl font-bold mb-6 text-center">QUẢN LÝ ẢNH ĐỘNG</h1>
+
       <div className="flex justify-between mb-4">
-        <button className="flex items-center px-4 py-2 bg-green-600 text-white font-bold rounded-lg">
-          <PlusIcon className="h-5 w-5 mr-2" /> THÊM
+        <button
+          onClick={handleAddImage}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center"
+        >
+          <FaPlus className="mr-2" /> THÊM
         </button>
-        <button className="flex items-center px-4 py-2 bg-gray-700 text-white font-bold rounded-lg" onClick={openConfigModal}> {/* Thêm onClick */}
-          <Cog6ToothIcon className="h-5 w-5 mr-2" /> CẤU HÌNH
+
+        <button
+          onClick={handleConfigClick}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md flex items-center"
+        >
+          <FaCog className="mr-2" /> CẤU HÌNH
         </button>
       </div>
-      <div className="overflow-hidden border rounded-lg">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">STT</th>
-              <th className="border p-2">ID</th>
-              <th className="border p-2">ẢNH</th>
-              <th className="border p-2">HÀNH ĐỘNG</th>
+
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-16">
+                STT
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-24">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                ẢNH (URL)
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider w-32">
+                HÀNH ĐỘNG
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={4} className="text-center p-4">Đang tải...</td>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {images.map((image, index) => (
+              <tr key={image.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                  {index + 1 + (currentPage - 1) * 10}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                  {image.id}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                  <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => handleViewImage(image.url)}
+                  >
+                    {image.url}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                  <button
+                    onClick={() => handleViewImage(image.url)}
+                    className="text-blue-600 hover:text-blue-900"
+                    title="Xem"
+                  >
+                    <FaSearch size={18} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setImageToDelete(image.id);
+                      setIsConfirmDeleteOpen(true);
+                    }}
+                    className="text-red-600 hover:text-red-900 ml-2"
+                    title="Xóa"
+                  >
+                    <FaTrash size={18} />
+                  </button>
+                </td>
               </tr>
-            ) : (
-              currentImages.map((image, index) => (
-                <tr key={image.id} className="border-t">
-                  <td className="border p-2 text-center">{indexOfFirstImage + index + 1}</td>
-                  <td className="border p-2 text-center">{image.name}</td>
-                  <td className="border p-2 text-center">
-                    <img src={image.url} alt={image.name} className="h-12 w-12 object-cover mx-auto" />
-                  </td>
-                  <td className="border p-2 text-center flex justify-center space-x-4">
-                    <button className="text-blue-500 hover:text-blue-700">
-                      <MagnifyingGlassIcon className="h-5 w-5" />
-                    </button>
-                    <button onClick={() => openDeleteModal(image)} className="text-red-500 hover:text-red-700">
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
-      {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white p-4 rounded-lg shadow-md max-w-fit mx-auto mt-32"
-        overlayClassName="fixed inset-0 bg-gray bg-opacity-20 flex justify-center items-center"
-      >
-        <h2 className="text-lg font-bold text-center">BẠN CÓ CHẮC CHẮN MUỐN XÓA ẢNH NÀY KHÔNG!!!</h2>
-        <div className="flex justify-center mt-4 space-x-4">
-          <button className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg" onClick={() => imageToDelete && handleDelete(imageToDelete.id)}>
-            XÁC NHẬN
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-6">
+        <nav
+          className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+          aria-label="Pagination"
+        >
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <span className="sr-only">Previous</span>
+            &lt;
           </button>
-          <button className="px-4 py-2 bg-gray-400 text-gray-800 font-bold rounded-lg" onClick={() => setModalIsOpen(false)}>
-            HỦY BỎ
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => handlePageChange(i + 1)}
+              className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium ${
+                currentPage === i + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+          >
+            <span className="sr-only">Next</span>
+            &gt;
           </button>
+        </nav>
+      </div>
+
+      {/* Image View Modal */}
+      {isImageViewOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/25">
+          <div className="bg-white rounded-lg p-4 max-w-md max-h-[80%] overflow-y-auto">
+            <img
+              src={selectedImageUrl}
+              alt="Large view"
+              className="w-full h-auto rounded mb-4"
+            />
+            <button
+              onClick={() => setIsImageViewOpen(false)}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+            >
+              ĐÓNG
+            </button>
+          </div>
         </div>
-      </Modal>
-      <ImageConfigModal isOpen={configModalIsOpen} onRequestClose={closeConfigModal} images={images} /> {/* Thêm ImageConfigModal */}
+      )}
+
+      {/* Confirm Delete Modal */}
+      {isConfirmDeleteOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white rounded-lg p-6">
+            <h2 className="text-lg font-bold mb-4">XÁC NHẬN XÓA</h2>
+            <p>Bạn có chắc chắn muốn xóa hình ảnh này?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                onClick={() => setIsConfirmDeleteOpen(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+              >
+                HỦY BỎ
+              </button>
+              <button
+                onClick={handleDeleteImage}
+                className="bg-red-600 text-white px-4 py-2 rounded"
+              >
+                XÁC NHẬN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Configuration Modal */}
+      {isConfigOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white rounded-lg p-6 w-4/5 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">CẤU HÌNH ẢNH</h2>
+              <button
+                onClick={() => setIsConfigOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <ImageConfiguration 
+              initialImages={images} 
+              onSave={handleConfigSave} 
+              onCancel={() => setIsConfigOpen(false)} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

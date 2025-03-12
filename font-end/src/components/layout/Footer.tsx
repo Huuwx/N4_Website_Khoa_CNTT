@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -10,7 +9,7 @@ const Footer = () => {
           <div className="w-full md:w-1/4 px-4">
             <div className="mb-4 flex items-center">
               <img
-                src="/logo_tlu.png"
+                src="https://cdn.haitrieu.com/wp-content/uploads/2021/10/Logo-DH-Thuy-Loi.png"
                 alt="Khoa CNTT Logo"
                 className="w-10 h-10"
               />

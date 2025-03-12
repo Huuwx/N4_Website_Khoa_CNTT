@@ -4,6 +4,7 @@ import ArticleModal from './components/ArticleModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import Pagination from './components/Pagination';
 import DatePicker from './components/DatePicker';
+import { getArticles, createArticle, updateArticle, deleteArticle } from '@/services';
 
 // Định nghĩa kiểu dữ liệu cho bài viết
 interface Article {
@@ -61,14 +62,39 @@ const ArticleManagement = () => {
     { value: 'Tuyển sinh', label: 'Tuyển sinh' },
   ];
 
-  // Mô phỏng tải dữ liệu
-  const refreshData = () => {
+  // Lấy dữ liệu từ API
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try{
+        const data = await getArticles();
+        setArticles(data);
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu: ', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+    // Lấy dữ liệu từ API khi component mount
+    useEffect(() => {
+      refreshData();
+    }, []);
+
+  // Hàm tải lại dữ liệu
+  const refreshData = async () => {
     setIsLoading(true);
-    // Mô phỏng API call
-    setTimeout(() => {
+    try{
+      const data = await getArticles();
+      setArticles(data);
+    } catch (error) {
+      console.error('Lỗi khi tải lại dữ liệu: ', error);
+    } finally {
       setIsLoading(false);
-    }, 800);
-  };
+    }
+  }
 
   // Reset trang về 1 khi thay đổi bộ lọc
   useEffect(() => {
@@ -94,44 +120,46 @@ const ArticleManagement = () => {
   };
 
   // Xử lý khi xác nhận xóa bài viết
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (currentArticle) {
       setIsLoading(true);
-      // Mô phỏng API call
-      setTimeout(() => {
+      try {
+        await deleteArticle(currentArticle.id);
         const updatedArticles = articles.filter(article => article.id !== currentArticle.id);
         setArticles(updatedArticles);
         setIsDeleteModalOpen(false);
+      } catch (error) {
+        console.error('Lỗi khi xóa bài viết:', error);
+      } finally {
         setIsLoading(false);
-      }, 500);
+      }
     }
   };
 
-  // Xử lý khi lưu bài viết (thêm mới hoặc cập nhật)
-  const handleSaveArticle = (articleData: Omit<Article, 'id'>) => {
+
+
+  const handleSaveArticle = async (articleData: Omit<Article, 'id'>) => {
     setIsLoading(true);
-    // Mô phỏng API call
-    setTimeout(() => {
-      if (currentArticle) {
-        // Cập nhật bài viết hiện có
-        const updatedArticles = articles.map(article => 
-          article.id === currentArticle.id 
-            ? { ...article, ...articleData } 
-            : article
-        );
-        setArticles(updatedArticles);
-      } else {
-        // Thêm bài viết mới
-        const newArticle = {
-          id: articles.length > 0 ? Math.max(...articles.map(a => a.id)) + 1 : 1,
-          ...articleData,
-        };
-        setArticles([...articles, newArticle]);
-      }
-      setIsModalOpen(false);
-      setIsLoading(false);
-    }, 500);
-  };
+    try {
+        if (currentArticle) {
+            // Cập nhật bài viết
+            const updatedArticle = await updateArticle(currentArticle.id, articleData);
+            const updatedArticles = articles.map(article =>
+                article.id === currentArticle.id ? updatedArticle : article
+            );
+            setArticles(updatedArticles);
+        } else {
+            // Thêm bài viết mới
+            const newArticle = await createArticle(articleData);
+            setArticles([...articles, newArticle]);
+        }
+        setIsModalOpen(false);
+    } catch (error) {
+        console.error('Lỗi khi lưu bài viết:', error);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
   // Xử lý sắp xếp
   const toggleSortOrder = () => {
@@ -150,7 +178,7 @@ const ArticleManagement = () => {
       // Chuyển đổi định dạng ngày DD/MM/YYYY thành Date object để so sánh
       const dateA = a.publishDate.split('/').reverse().join('-') + 'T' + a.publishTime;
       const dateB = b.publishDate.split('/').reverse().join('-') + 'T' + b.publishTime;
-      
+
       if (sortOrder === 'asc') {
         return new Date(dateA).getTime() - new Date(dateB).getTime();
       } else {
