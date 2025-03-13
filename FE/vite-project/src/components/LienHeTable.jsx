@@ -22,9 +22,10 @@ export default function LienHeTable() {
       setData(response.data.data);
       setFilteredData(response.data.data);
     } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu:", error);
+      console.error("Lỗi khi lấy dữ liệu:", error.response?.data || error.message);
     }
   };
+  
 
   // Chuyển sang trang LienHeDetail khi nhấn chỉnh sửa
   const handleEdit = (record) => {
