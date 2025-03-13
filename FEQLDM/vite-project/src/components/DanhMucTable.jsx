@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, Select, message } from "antd";
 import api from "../services/api";
 import HeaderNav from "./HeaderNav";
-
+import { EditOutlined } from "@ant-design/icons";
 export default function DanhMucTable() {
   const [danhMucs, setDanhMucs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,11 +86,11 @@ export default function DanhMucTable() {
       render: (_, record) => (
         <>
           <Button onClick={() => showModal(record)} className="mr-2">
-            Sửa
+            <img src="https://cdn-icons-png.flaticon.com/512/1159/1159633.png" alt="Edit" width={20} />
           </Button>
           <Button onClick={() => handleDelete(record.id)} danger>
-            Xóa
-          </Button>
+  <img src="https://cdn-icons-png.flaticon.com/512/3096/3096673.png" alt="Delete" width={20} />
+</Button>
         </>
       ),
     },

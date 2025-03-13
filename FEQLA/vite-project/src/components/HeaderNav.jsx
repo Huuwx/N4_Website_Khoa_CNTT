@@ -23,10 +23,10 @@ export default function HeaderNav() {
           <MenuOutlined />
         </button>
 
-        <div className="flex space-x-4">
-          <Button className="border border-black text-black font-bold bg-white">ADMIN</Button>
-          <Button className="border border-black text-black font-bold bg-white">ĐĂNG XUẤT</Button>
-          <Button className="border border-black text-black font-bold bg-white">LIÊN HỆ</Button>
+        <div className="flex space-x-6 font-bold">
+          <Button className="text-white font-bold ">ADMIN</Button>
+          <Button className="text-white font-bold ">ĐĂNG XUẤT</Button>
+          <Button className="text-white font-bold  !bg-red-500">LIÊN HỆ</Button>
         </div>
       </div>
 

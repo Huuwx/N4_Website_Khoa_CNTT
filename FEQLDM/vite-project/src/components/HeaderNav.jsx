@@ -57,10 +57,10 @@ export default function HeaderNav({ danhMucs }) {
           <MenuOutlined />
         </button>
 
-        <div className="flex space-x-6 text-white font-bold">
-          <Button className="text-white font-bold">ADMIN</Button>
-          <Button className="text-white font-bold">ĐĂNG XUẤT</Button>
-          <Button className="text-white font-bold">LIÊN HỆ</Button>
+        <div className="flex space-x-6 font-bold">
+          <Button className="text-white font-bold ">ADMIN</Button>
+          <Button className="text-white font-bold ">ĐĂNG XUẤT</Button>
+          <Button className="text-white font-bold  !bg-red-500">LIÊN HỆ</Button>
         </div>
       </div>
 

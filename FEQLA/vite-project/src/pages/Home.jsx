@@ -20,9 +20,9 @@ const Home = () => {
     useEffect(() => {
         fetchImages();
     }, []);
-
+    //p-5 max-w-4xl mx-auto
     return (
-        <div className="p-5 max-w-4xl mx-auto">
+        <div className="p-5">
             <HeaderNav />
             <h1 className="text-2xl font-bold mb-4">Quản lý ảnh</h1>
             
