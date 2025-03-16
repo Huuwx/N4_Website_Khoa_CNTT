@@ -1,19 +1,23 @@
 package com.example.ptda.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "danh_muc")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class DanhMuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idDanhMuc;
+    private Long id;
 
-    private String maDanhMuc;
+    @Column(nullable = false)
     private String tenDanhMuc;
-    private String nhomDanhMuc;
+
+    @ManyToOne
+    @JoinColumn(name = "nhom_danh_muc_id", nullable = false) // Đảm bảo không null
+    private NhomDanhMuc nhomDanhMuc;
 }

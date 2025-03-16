@@ -4,50 +4,40 @@ import { Button } from "antd";
 import api from "../services/api"; // Import API service
 import logo from "../assets/images/logo.jpg";
 
-export default function HeaderNav({ danhMucs }) {
+export default function HeaderNav() {
   const [active, setActive] = useState(null);
   const [menuItems, setMenuItems] = useState([]); // Dữ liệu menu từ API
-
-  // Danh sách nhóm danh mục cố định
-  const fixedGroups = [
-    "Tuyển sinh",
-    "Giới thiệu",
-    "Doanh nghiệp",
-    "Đào tạo",
-    "Khoa Công Nghệ",
-    "Hợp Tác",
-  ];
 
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const response = await api.get("/danh-muc");
-        const rawData = response.data.data;
+        // Gọi API để lấy nhóm danh mục và danh mục con
+        const responseNhom = await api.get("/nhom-danh-muc");
+        const responseDanhMuc = await api.get("/danh-muc");
 
-        // Khởi tạo danh sách nhóm danh mục với danh mục con rỗng
-        const groupedData = fixedGroups.map((group) => ({
-          label: group,
-          submenu: [],
+        const rawNhom = responseNhom.data;
+        const rawDanhMuc = responseDanhMuc.data;
+
+        console.log("API Nhóm danh mục:", rawNhom);
+        console.log("API Danh mục con:", rawDanhMuc);
+
+        // Tạo danh sách nhóm danh mục có danh mục con
+        const groupedData = rawNhom.map((nhom) => ({
+          label: nhom.tenNhom,
+          submenu: rawDanhMuc
+            .filter((dm) => dm.nhomDanhMuc.id === nhom.id) // Sửa lỗi truy vấn đúng ID
+            .map((dm) => dm.tenDanhMuc),
         }));
 
-        // Nhóm danh mục con vào nhóm tương ứng
-        rawData.forEach((item) => {
-          const groupIndex = groupedData.findIndex(
-            (g) => g.label === item.nhomDanhMuc
-          );
-          if (groupIndex !== -1) {
-            groupedData[groupIndex].submenu.push(item.tenDanhMuc);
-          }
-        });
-
-        setMenuItems(groupedData);
+        console.log("Dữ liệu menu cập nhật:", groupedData);
+        setMenuItems(groupedData); // Cập nhật state
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu menu:", error);
+        console.error("Lỗi khi lấy dữ liệu menu:", error.message);
       }
     };
 
     fetchMenuItems();
-  }, [danhMucs]);
+  }, [menuItems]); // Chạy 1 lần khi component mount
 
   return (
     <div className="relative">
@@ -58,9 +48,9 @@ export default function HeaderNav({ danhMucs }) {
         </button>
 
         <div className="flex space-x-6 font-bold">
-          <Button className="text-white font-bold ">ADMIN</Button>
-          <Button className="text-white font-bold ">ĐĂNG XUẤT</Button>
-          <Button className="text-white font-bold  !bg-red-500">LIÊN HỆ</Button>
+          <Button className="text-white font-bold">ADMIN</Button>
+          <Button className="text-white font-bold">ĐĂNG XUẤT</Button>
+          <Button className="text-white font-bold !bg-red-500">LIÊN HỆ</Button>
         </div>
       </div>
 

@@ -5,9 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class DanhMucDTO {
+public class NhomDanhMucDTO {
     private Long id;
-    //private String maDanhMuc;
-    private String tenDanhMuc;
-    private NhomDanhMucDTO nhomDanhMuc;
+    private String tenNhom;
 }

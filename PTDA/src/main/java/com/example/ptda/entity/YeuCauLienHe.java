@@ -9,7 +9,7 @@ import lombok.Data;
 public class YeuCauLienHe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idLienHe;
+    private Long id;
 
     private String ngayLienHe;
     private String hoTen;
