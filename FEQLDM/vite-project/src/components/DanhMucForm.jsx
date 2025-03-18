@@ -12,7 +12,7 @@ export default function DanhMucForm({ refreshData }) {
       alert("Danh mục được tạo thành công!");
       setTenDanhMuc("");
       setNhomDanhMuc("");
-      refreshData(); // Load lại danh sách sau khi thêm
+      //refreshData(); // Load lại danh sách sau khi thêm
     } catch (error) {
       console.error("Lỗi khi thêm danh mục:", error);
     }
@@ -34,7 +34,7 @@ export default function DanhMucForm({ refreshData }) {
         onChange={(e) => setNhomDanhMuc(e.target.value)}
         className="border p-2 w-full mb-2"
       />
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2">Tạo</button>
+     
     </form>
   );
 }

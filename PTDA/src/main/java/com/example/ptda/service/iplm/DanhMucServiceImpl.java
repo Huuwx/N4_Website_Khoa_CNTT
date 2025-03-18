@@ -1,73 +1,81 @@
 package com.example.ptda.service.iplm;
 
 import com.example.ptda.dto.DanhMucDTO;
-import com.example.ptda.dto.ResponseDTO;
+import com.example.ptda.dto.NhomDanhMucDTO;
 import com.example.ptda.entity.DanhMuc;
+import com.example.ptda.entity.NhomDanhMuc;
 import com.example.ptda.respository.DanhMucRepository;
+import com.example.ptda.respository.NhomDanhMucRepository;
 import com.example.ptda.service.DanhMucService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DanhMucServiceImpl implements DanhMucService {
-    @Autowired
-    private DanhMucRepository danhMucRepository;
+    private final DanhMucRepository danhMucRepository;
+    private final NhomDanhMucRepository nhomDanhMucRepository;
 
     @Override
-    public ResponseDTO<List<DanhMucDTO>> getAllDanhMuc() {
-        List<DanhMuc> danhMucs = danhMucRepository.findAll();
-        List<DanhMucDTO> danhMucDTOs = danhMucs.stream()
+    public List<DanhMucDTO> getAllDanhMuc() {
+        return danhMucRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        return new ResponseDTO<>(true, "Lấy danh mục thành công", danhMucDTOs);
     }
 
     @Override
-    public ResponseDTO<DanhMucDTO> getDanhMucById(Long id) {
-        DanhMuc danhMuc = danhMucRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại!"));
-        return new ResponseDTO<>(true, "Lấy danh mục thành công", convertToDTO(danhMuc));
-    }
-
-    @Override
-    public ResponseDTO<DanhMucDTO> createDanhMuc(DanhMucDTO danhMucDTO) {
+    @Transactional
+    public DanhMucDTO createDanhMuc(DanhMucDTO danhMucDTO) {
         DanhMuc danhMuc = new DanhMuc();
-        // danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
-        // danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
+        //danhMuc.setMaDanhMuc(danhMucDTO.getMaDanhMuc());
+        danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
 
-        danhMucRepository.save(danhMuc);
-        return new ResponseDTO<>(true, "Tạo danh mục thành công", convertToDTO(danhMuc));
+        Optional<NhomDanhMuc> nhomDanhMuc = nhomDanhMucRepository.findById(danhMucDTO.getNhomDanhMuc().getId());
+        nhomDanhMuc.ifPresent(danhMuc::setNhomDanhMuc);
+
+        danhMuc = danhMucRepository.save(danhMuc);
+        return convertToDTO(danhMuc);
     }
 
     @Override
-    public ResponseDTO<DanhMucDTO> updateDanhMuc(Long id, DanhMucDTO danhMucDTO) {
+    @Transactional
+    public DanhMucDTO updateDanhMuc(Long id, DanhMucDTO danhMucDTO) {
         DanhMuc danhMuc = danhMucRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại!"));
 
-        // danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
-        // danhMuc.setNhomDanhMuc(danhMucDTO.getNhomDanhMuc());
+        //danhMuc.setMaDanhMuc(danhMucDTO.getMaDanhMuc());
+        danhMuc.setTenDanhMuc(danhMucDTO.getTenDanhMuc());
 
-        danhMucRepository.save(danhMuc);
-        return new ResponseDTO<>(true, "Cập nhật danh mục thành công", convertToDTO(danhMuc));
+        Optional<NhomDanhMuc> nhomDanhMuc = nhomDanhMucRepository.findById(danhMucDTO.getNhomDanhMuc().getId());
+        nhomDanhMuc.ifPresent(danhMuc::setNhomDanhMuc);
+
+        danhMuc = danhMucRepository.save(danhMuc);
+        return convertToDTO(danhMuc);
     }
 
     @Override
-    public ResponseDTO<String> deleteDanhMuc(Long id) {
+    @Transactional
+    public void deleteDanhMuc(Long id) {
         if (!danhMucRepository.existsById(id)) {
-            return new ResponseDTO<>(false, "Danh mục không tồn tại!", null);
+            throw new RuntimeException("Danh mục không tồn tại!");
         }
         danhMucRepository.deleteById(id);
-        return new ResponseDTO<>(true, "Xóa danh mục thành công", null);
     }
 
     private DanhMucDTO convertToDTO(DanhMuc danhMuc) {
-        DanhMucDTO dto = new DanhMucDTO();
-        // dto.setId(danhMuc.getIdDanhMuc());
-        // dto.setTenDanhMuc(danhMuc.getTenDanhMuc());
-        // dto.setNhomDanhMuc(danhMuc.getNhomDanhMuc());
-        return dto;
+        NhomDanhMuc nhom = danhMuc.getNhomDanhMuc(); // Lấy thông tin nhóm danh mục
+
+        return new DanhMucDTO(
+                danhMuc.getId(),
+                //danhMuc.getMaDanhMuc(),
+                danhMuc.getTenDanhMuc(),
+                nhom != null ? new NhomDanhMucDTO(nhom.getId(), nhom.getTenNhom()) : null
+        );
     }
 }
+

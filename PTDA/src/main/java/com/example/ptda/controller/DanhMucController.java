@@ -1,9 +1,10 @@
 package com.example.ptda.controller;
 
 import com.example.ptda.dto.DanhMucDTO;
-import com.example.ptda.dto.ResponseDTO;
 import com.example.ptda.service.DanhMucService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,38 +12,31 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/danh-muc")
-@CrossOrigin(origins = "http://localhost:5173") // Cho phép React truy cập
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Hỗ trợ gọi API từ frontend (có thể thay "*" bằng domain cụ thể)
 public class DanhMucController {
-    @Autowired
-    private DanhMucService danhMucService;
+    private final DanhMucService danhMucService;
 
     @GetMapping
-    public ResponseEntity<ResponseDTO<List<DanhMucDTO>>> getAllDanhMuc() {
-        ResponseDTO<List<DanhMucDTO>> response = danhMucService.getAllDanhMuc();
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDTO<DanhMucDTO>> getDanhMucById(@PathVariable Long id) {
-        ResponseDTO<DanhMucDTO> response = danhMucService.getDanhMucById(id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<DanhMucDTO>> getAllDanhMuc() {
+        return ResponseEntity.ok(danhMucService.getAllDanhMuc());
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDTO<DanhMucDTO>> createDanhMuc(@RequestBody DanhMucDTO danhMucDTO) {
-        ResponseDTO<DanhMucDTO> response = danhMucService.createDanhMuc(danhMucDTO);
-        return ResponseEntity.ok(response);
+    @ResponseStatus(HttpStatus.CREATED) // Trả về 201 Created khi tạo thành công
+    public DanhMucDTO createDanhMuc(@Valid @RequestBody DanhMucDTO danhMucDTO) {
+        return danhMucService.createDanhMuc(danhMucDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDTO<DanhMucDTO>> updateDanhMuc(@PathVariable Long id, @RequestBody DanhMucDTO danhMucDTO) {
-        ResponseDTO<DanhMucDTO> response = danhMucService.updateDanhMuc(id, danhMucDTO);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<DanhMucDTO> updateDanhMuc(@PathVariable Long id, @Valid @RequestBody DanhMucDTO danhMucDTO) {
+        return ResponseEntity.ok(danhMucService.updateDanhMuc(id, danhMucDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDTO<String>> deleteDanhMuc(@PathVariable Long id) {
-        ResponseDTO<String> response = danhMucService.deleteDanhMuc(id);
-        return ResponseEntity.ok(response);
+    @ResponseStatus(HttpStatus.NO_CONTENT) // Trả về 204 No Content khi xóa thành công
+    public void deleteDanhMuc(@PathVariable Long id) {
+        danhMucService.deleteDanhMuc(id);
     }
 }
+
