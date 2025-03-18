@@ -1,1 +1,0 @@
-// Có tính toán các hàm (tiện ích) thì code ở đây
