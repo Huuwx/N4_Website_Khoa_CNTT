@@ -7,13 +7,12 @@ import HeaderNav from "../components/HeaderNav";
 const { Title, Text } = Typography;
 
 const Config = () => {
-  const [images, setImages] = useState([]); // Danh sách ảnh từ API
-  const [selectedImages, setSelectedImages] = useState([]); // Ảnh đã chọn
+  const [images, setImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [transitionTime, setTransitionTime] = useState(3000); // Thời gian chuyển đổi ảnh (mặc định 3 giây)
+  const [transitionTime, setTransitionTime] = useState(3000);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // 🖼 Lấy danh sách ảnh từ API
   useEffect(() => {
     const fetchImages = async () => {
       try {
@@ -27,7 +26,6 @@ const Config = () => {
     fetchImages();
   }, []);
 
-  // 🔥 Load ảnh đã chọn từ localStorage khi mở trang
   useEffect(() => {
     const savedImages = localStorage.getItem("selectedImages");
     if (savedImages) {
@@ -35,35 +33,6 @@ const Config = () => {
     }
   }, []);
 
-  // 🖼 Khi chọn ảnh (Chỉ giữ tối đa 5 ảnh, thay thế ảnh cũ nhất)
-  const handleAddImages = (newImages) => {
-    console.log("Ảnh đã chọn:", newImages);
-
-    let updatedImages = [...selectedImages, ...newImages];
-
-    // Loại bỏ ảnh trùng bằng cách tạo danh sách với ID duy nhất
-    const uniqueImages = [];
-    const seenIds = new Set();
-
-    for (let img of updatedImages) {
-      if (!seenIds.has(img.idAnh)) {
-        seenIds.add(img.idAnh);
-        uniqueImages.push(img);
-      }
-    }
-
-    // Giữ tối đa 5 ảnh mới nhất (loại bỏ ảnh cũ nhất)
-    if (uniqueImages.length > 5) {
-      uniqueImages.splice(0, uniqueImages.length - 5);
-      message.warning("Đã đạt giới hạn 5 ảnh, ảnh cũ nhất sẽ bị thay thế!");
-    }
-
-    setSelectedImages(uniqueImages);
-    localStorage.setItem("selectedImages", JSON.stringify(uniqueImages));
-    setModalVisible(false);
-  };
-
-  // Chuyển đổi giữa các ảnh mỗi `transitionTime` ms
   useEffect(() => {
     if (selectedImages.length === 0) return;
 
@@ -74,8 +43,48 @@ const Config = () => {
       });
     }, transitionTime);
 
-    return () => clearInterval(interval); // Clean up the interval on component unmount
+    return () => clearInterval(interval);
   }, [selectedImages, transitionTime]);
+
+  const handleAddImages = (newImages) => {
+    let updatedImages = [...selectedImages, ...newImages];
+
+    const uniqueImages = [];
+    const seenIds = new Set();
+
+    for (let img of updatedImages) {
+      if (!seenIds.has(img.idAnh)) {
+        seenIds.add(img.idAnh);
+        uniqueImages.push(img);
+      }
+    }
+
+    if (uniqueImages.length > 5) {
+      uniqueImages.splice(0, uniqueImages.length - 5);
+      message.warning("Đã đạt giới hạn 5 ảnh, ảnh cũ nhất sẽ bị thay thế!");
+    }
+
+    setSelectedImages(uniqueImages);
+    localStorage.setItem("selectedImages", JSON.stringify(uniqueImages));
+    setModalVisible(false);
+  };
+
+  const moveImage = (index, direction) => {
+    if (
+      (direction === -1 && index === 0) ||
+      (direction === 1 && index === selectedImages.length - 1)
+    ) {
+      return;
+    }
+
+    const updatedImages = [...selectedImages];
+    const temp = updatedImages[index];
+    updatedImages[index] = updatedImages[index + direction];
+    updatedImages[index + direction] = temp;
+
+    setSelectedImages(updatedImages);
+    localStorage.setItem("selectedImages", JSON.stringify(updatedImages));
+  };
 
   const columns = [
     { title: "STT", dataIndex: "stt", key: "stt", render: (_, __, index) => index + 1 },
@@ -92,6 +101,16 @@ const Config = () => {
       key: "url",
       render: (url) => <Text copyable>{url}</Text>,
     },
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (_, record, index) => (
+        <div className="flex gap-2">
+          <Button disabled={index === 0} onClick={() => moveImage(index, -1)}>⬆️</Button>
+          <Button disabled={index === selectedImages.length - 1} onClick={() => moveImage(index, 1)}>⬇️</Button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -107,7 +126,6 @@ const Config = () => {
         </Button>
       </div>
 
-      {/* Modal chọn ảnh */}
       <ImageListModal
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
@@ -115,7 +133,6 @@ const Config = () => {
         images={images}
       />
 
-      {/* Hiển thị ảnh đã chọn */}
       <div className="mt-6">
         <Title level={3} className="text-center bg-gray-100 py-2 rounded-lg shadow">
           Cấu Hình Ảnh
@@ -134,7 +151,7 @@ const Config = () => {
                 className="w-32"
               />
             </div>
-            <div className="flex justify-center items-center ">
+            <div className="flex justify-center items-center">
               <img
                 src={selectedImages[currentImageIndex]?.anh}
                 alt="Ảnh chuyển đổi"
@@ -150,7 +167,6 @@ const Config = () => {
               pagination={false}
               className="mt-4 shadow-lg"
             />
-            
           </>
         )}
       </div>
