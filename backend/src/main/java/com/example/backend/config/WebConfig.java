@@ -11,8 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins(
-                    "http://localhost:3000",
-                    "http://localhost:5173"  // Add Vite default port
+                    "http://localhost:8080",
+                    "http://localhost:5173",  // Add Vite default port
+                    "https://*.ngrok-free.app"
+
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
@@ -22,8 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
         // Add specific mapping for auth endpoints
         registry.addMapping("/api/auth/**")
                 .allowedOrigins(
-                    "http://localhost:3000",
-                    "http://localhost:5173"  // Add Vite default port
+                    "http://localhost:8080",
+                    "http://localhost:5173",  // Add Vite default port
+                    "https://*.ngrok-free.app"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
