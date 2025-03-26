@@ -18,6 +18,6 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["e258-117-5-40-137.ngrok-free.app"], // Thêm domain vào đây
+    allowedHosts: ["66b2-117-5-40-137.ngrok-free.app"], // Thêm domain vào đây
   }
 })

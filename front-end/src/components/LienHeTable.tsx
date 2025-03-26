@@ -104,43 +104,56 @@ export default function LienHeTable() {
   ];
 
   return (
-    <div className="container">
-      <h1 className="text-xl font-bold mb-4">QUẢN LÝ YÊU CẦU LIÊN HỆ</h1>
-
-      <div className="flex gap-4 mb-4">
-        <DatePicker
-          format="DD/MM/YYYY"
-          placeholder="Chọn ngày"
-          value={searchDate}
-          onChange={(date) => setSearchDate(date)}
-        />
-        <Select
-          placeholder="Chọn trạng thái"
-          allowClear
-          onChange={(value) => setSearchStatus(value || "")}
-          style={{ width: 150 }}
-        >
-          <Select.Option value="Đang xử lý">Đang xử lý</Select.Option>
-          <Select.Option value="Đã xử lý">Đã xử lý</Select.Option>
-        </Select>
-        <Input
-          placeholder="Nhập họ tên"
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          style={{ width: 200 }}
-        />
-        <Button type="primary" onClick={handleSearch}>
-          Tìm kiếm
-        </Button>
+    <div className="container mx-auto px-4">
+      <div className="bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
+          QUẢN LÝ YÊU CẦU LIÊN HỆ
+        </h1>
+  
+        {/* Phần tìm kiếm */}
+        <div className="flex justify-center gap-4 mb-6">
+          <DatePicker
+            format="DD/MM/YYYY"
+            placeholder="Chọn ngày"
+            value={searchDate}
+            onChange={(date) => setSearchDate(date)}
+            className="w-48"
+          />
+          <Select
+            placeholder="Chọn trạng thái"
+            allowClear
+            onChange={(value) => setSearchStatus(value || "")}
+            className="w-48"
+          >
+            <Select.Option value="Đang xử lý">Đang xử lý</Select.Option>
+            <Select.Option value="Đã xử lý">Đã xử lý</Select.Option>
+          </Select>
+          <Input
+            placeholder="Nhập họ tên"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            className="w-48"
+          />
+          <Button type="primary" onClick={handleSearch}>
+            Tìm kiếm
+          </Button>
+        </div>
+  
+        {/* Bảng dữ liệu */}
+        <div className="max-w-4xl mx-auto">
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            rowKey="id"
+            pagination={{ 
+              pageSize: 5, 
+              position: ["bottomCenter"],
+              className: "text-center"
+            }}
+            className="shadow-lg rounded-lg overflow-hidden"
+          />
+        </div>
       </div>
-
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="id"
-        pagination={{ pageSize: 5, position: ["bottomCenter"] }}
-        className="contact-table"
-      />
     </div>
   );
 }
