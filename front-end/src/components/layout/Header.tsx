@@ -245,7 +245,7 @@ const Header: React.FC<HeaderProps> = () => {
               </Link>
             )}
             <Link
-              to="/contact"
+              to="/lienheform"
               className="px-2 sm:px-4 py-2 font-medium bg-[#e53935] hover:bg-[#c22e2a] rounded transition-colors whitespace-nowrap"
             >
               LIÊN HỆ

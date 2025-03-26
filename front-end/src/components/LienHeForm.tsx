@@ -1,16 +1,18 @@
 import { useState, FormEvent, ChangeEvent } from "react";
-import {apiService} from "@/services/api";
+import yeuCauLienHeService from "@/services/yeucaulienheService";
+
+
 
 interface ContactFormProps {
   refreshData: () => void;
 }
 
 interface FormDataType {
-  hoTen: string;
+  name: string;
   soDienThoai: string;
   email: string;
   tieuDe: string;
-  noiDung: string;
+  message: string;
 }
 
 interface MessageType {
@@ -20,11 +22,11 @@ interface MessageType {
 
 export default function ContactForm({ refreshData }: ContactFormProps) {
   const [formData, setFormData] = useState<FormDataType>({
-    hoTen: "",
+    name: "",
     soDienThoai: "",
     email: "",
     tieuDe: "",
-    noiDung: "",
+    message: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -40,25 +42,41 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
     setMessage(null);
   
     const ngayLienHe = new Date().toLocaleDateString("vi-VN");  
-    const formDataWithDate = { ...formData, ngayLienHe };
+    const formDataWithDate = { 
+      ...formData, 
+      ngayLienHe, 
+      status: "Chưa đọc" as "Chưa đọc" | "Đang xử lý" | "Đã xử lý",
+      data: {}
+    };
+    
+    
+    
   
     try {
-      await apiService.post("/yeu-cau-lien-he", formDataWithDate);
-      setMessage({
-        type: 'success',
-        text: 'Gửi yêu cầu liên hệ thành công!'
-      });
-      setFormData({ hoTen: "", soDienThoai: "", email: "", tieuDe: "", noiDung: "" });
+      const response = await yeuCauLienHeService.createYeuCauLienHe(formDataWithDate);
+      
+      // Kiểm tra phản hồi từ API
+      if (response && response.message === "Created successfully") {
+        setMessage({
+          type: 'success',
+          text: 'Gửi yêu cầu liên hệ thành công!'
+        });
+      } else {
+        throw new Error(response?.message || "Lỗi không xác định");
+      }
+    
+      setFormData({ name: "", soDienThoai: "", email: "", tieuDe: "", message: "" });
       refreshData();
-    } catch (error) {
+    } catch (error: any) {
       setMessage({
         type: 'error',
-        text: 'Có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại.'
+        text: error.message || 'Có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại.'
       });
       console.error("Lỗi khi gửi liên hệ:", error);
     } finally {
       setLoading(false);
     }
+    
   };
   
   return (
@@ -80,9 +98,9 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                name="hoTen"
+                name="name"
                 placeholder="Họ Tên"
-                value={formData.hoTen}
+                value={formData.name}
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
                 required
@@ -115,9 +133,9 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
                 className="bg-white w-full border p-2 rounded mb-3"
               />
               <textarea
-                name="noiDung"
+                name="message"
                 placeholder="Nội dung"
-                value={formData.noiDung}
+                value={formData.message}
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3 h-24"
                 required

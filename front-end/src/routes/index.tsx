@@ -30,6 +30,8 @@ function AppRoutes() {
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/lienheform" element={<LienHeForm refreshData={() => {}} />} />
         
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -49,9 +51,7 @@ function AppRoutes() {
             <Route path="danhmuc" element={<DanhMucPage />} />
             <Route path="images" element={<QuanLyAnhPage />} />
             <Route path="config" element={<ConfigQLAnh />} />
-            <Route path="/lienheform" element={<LienHeForm refreshData={() => {}} />} />
-            <Route path="/lienhe" element={<LienHeTable />} />
-            <Route path="/lienhe/:id" element={<LienHeDetail />} />
+            
           </Route>
 
           {/* Admin Routes */}
@@ -63,6 +63,8 @@ function AppRoutes() {
             <Route path="/quan-ly-danh-muc" element={<CategoryManagement />} />
             <Route path="/quan-ly-bai-viet" element={<ArticleManagement />} />
             <Route path="/quan-ly-anh-dong" element={<SliderManagement />} />
+            <Route path="/quan-ly-yeu-cau-lien-he" element={<LienHeTable />} />
+            <Route path="/quan-ly-yeu-cau-lien-he/:id" element={<LienHeDetail />} />
           </Route>
         </Route>
 

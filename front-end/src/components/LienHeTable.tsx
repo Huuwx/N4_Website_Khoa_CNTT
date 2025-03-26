@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Tag, Input, Select, DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../services/api";
+import yeuCauLienHeService from "@/services/yeucaulienheService"; // ✅ Import đúng
 import type { Dayjs } from 'dayjs';
 
-// Define interface for the contact request data
+// Định nghĩa interface cho dữ liệu yêu cầu liên hệ
 interface ContactRequest {
   id: number;
   ngayLienHe: string;
-  hoTen: string;
+  name: string;
   email: string;
-  noiDung: string;
-  trangThai: "Chưa đọc" | "Đang xử lý" | "Đã xử lý";
+  message: string;
+  status: "Chưa đọc" | "Đang xử lý" | "Đã xử lý";
 }
 
 export default function LienHeTable() {
@@ -28,20 +28,26 @@ export default function LienHeTable() {
 
   const fetchRequests = async () => {
     try {
-      const response = await apiService.get("/yeu-cau-lien-he");
-      const contactData = response.data as ContactRequest[];
+      const response = await yeuCauLienHeService.getAllYeuCauLienHe(); // ✅ Gọi API đúng
+
+      const contactData: ContactRequest[] = response.map((item) => ({
+        id: Number(item.id), 
+        ngayLienHe: item.ngayLienHe, 
+        name: item.name,
+        email: item.email,
+        message: item.message,
+        status: item.status, 
+      }));
+
       setData(contactData);
       setFilteredData(contactData);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Lỗi không xác định khi lấy dữ liệu';
-      console.error("Lỗi khi lấy dữ liệu:", errorMessage);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách yêu cầu liên hệ:", error);
     }
   };
 
   const handleEdit = (record: ContactRequest) => {
-    navigate(`/lienhe/${record.id}`, { state: { request: record } });
+    navigate(`/quan-ly-yeu-cau-lien-he/${record.id}`, { state: { request: record } });
   };
 
   const handleSearch = () => {
@@ -49,12 +55,12 @@ export default function LienHeTable() {
 
     if (searchName) {
       filtered = filtered.filter((item) =>
-        item.hoTen?.toLowerCase().includes(searchName.toLowerCase())
+        item.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
     if (searchStatus) {
-      filtered = filtered.filter((item) => item.trangThai === searchStatus);
+      filtered = filtered.filter((item) => item.status === searchStatus);
     }
 
     if (searchDate) {
@@ -73,13 +79,13 @@ export default function LienHeTable() {
       render: (_: unknown, __: unknown, index: number) => index + 1 
     },
     { title: "Ngày liên hệ", dataIndex: "ngayLienHe", key: "ngayLienHe" },
-    { title: "Họ tên", dataIndex: "hoTen", key: "hoTen" },
+    { title: "Họ tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Nội dung", dataIndex: "noiDung", key: "noiDung" },
+    { title: "Nội dung", dataIndex: "message", key: "message" },
     {
       title: "Trạng thái",
-      dataIndex: "trangThai",
-      key: "trangThai",
+      dataIndex: "status",
+      key: "status",
       render: (text: string) => (
         <Tag color={text === "Chưa đọc" ? "red" : text === "Đang xử lý" ? "orange" : "green"}>
           {text}
