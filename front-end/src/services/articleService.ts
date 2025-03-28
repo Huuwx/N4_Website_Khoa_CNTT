@@ -1,14 +1,12 @@
 import { axiosInstance } from "./index";
 import { axiosInstanceNoHeader } from "./indexNoHeader";
+import { CategoryGroup } from "./categoryService";
 
 export interface Article {
   id: number;
   title: string;
   thumbnailUrl: string;
-  category: {
-    id: number;
-    name: string;
-  };
+  categoryGroup: CategoryGroup;
   publishDate: string;
   content: string;
   status: 'DRAFT' | 'PUBLISHED';
@@ -19,7 +17,7 @@ export interface Article {
 export interface ArticleRequest {
   title: string;
   thumbnailUrl: string;
-  categoryId: number;
+  categoryGroupId: number;
   publishDate: string;
   content: string;
   status: 'DRAFT' | 'PUBLISHED';
@@ -41,7 +39,7 @@ export interface ArticleResponse {
 export interface ArticleQueryParams {
   page?: number;
   size?: number;
-  categoryId?: number;
+  categoryGroupId?: number;
   search?: string;
   status?: 'DRAFT' | 'PUBLISHED';
   sort?: string;

@@ -22,7 +22,7 @@ public class Article {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "thumbnail_url", nullable = false)
@@ -32,8 +32,8 @@ public class Article {
     private LocalDateTime publishDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @JoinColumn(name = "category_group_id", nullable = false)
+    private CategoryGroup categoryGroup;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

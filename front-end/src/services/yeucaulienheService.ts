@@ -5,7 +5,7 @@ export interface YeuCauLienHe {
   id: number;
   name: string;
   email: string;
-  ngayLienHe: string;
+  createdAt?: string;
   message: string;
   status: "Chưa đọc" | "Đang xử lý" | "Đã xử lý";
 }

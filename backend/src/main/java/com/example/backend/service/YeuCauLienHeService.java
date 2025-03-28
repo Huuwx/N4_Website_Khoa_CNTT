@@ -8,9 +8,6 @@ import com.example.backend.service.YeuCauLienHeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,10 +54,10 @@ public class YeuCauLienHeService {
         YeuCauLienHe entity = yeuCauLienHeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contact request not found"));
 
-        entity.setName(dto.getName());
-        entity.setEmail(dto.getEmail());
-        entity.setMessage(dto.getMessage());
-        entity.setStasus(dto.getStatus());
+        // Chỉ cập nhật trường status nếu được cung cấp
+        if (dto.getStatus() != null) {
+            entity.setStasus(dto.getStatus());
+        }
 
         YeuCauLienHe updatedEntity = yeuCauLienHeRepository.save(entity);
         log.info("Updated contact request ID: {}", id);

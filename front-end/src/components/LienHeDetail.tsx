@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Select } from "antd";
-import yeuCauLienHeService from "@/services/yeucaulienheService"; // Import đúng cách
+import yeuCauLienHeService from "@/services/yeucaulienheService";
+import dayjs from "dayjs";
 
 export default function LienHeDetail() {
   const location = useLocation();
@@ -12,7 +13,7 @@ export default function LienHeDetail() {
 
   const handleUpdateStatus = async () => {
     try {
-      await yeuCauLienHeService.updateTrangThaiYeuCau(request.id, status); // Đúng cách gọi API
+      await yeuCauLienHeService.updateTrangThaiYeuCau(request.id, status); 
       navigate("/quan-ly-yeu-cau-lien-he");
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
@@ -41,7 +42,7 @@ export default function LienHeDetail() {
           {/* Nội dung yêu cầu */}
           <div className="border-2 border-gray-300 p-4 rounded-2xl bg-gray-50">
             <p><strong>ID:</strong> {request?.id}</p>
-            <p><strong>NGÀY LIÊN HỆ:</strong> {request?.ngayLienHe}</p>
+            <p><strong>NGÀY LIÊN HỆ:</strong> {dayjs(request?.createdAt).format("DD/MM/YYYY HH:mm:ss")}</p>
             <p><strong>HỌ TÊN:</strong> {request?.name}</p>
             <p><strong>EMAIL:</strong> {request?.email}</p>
             <p><strong>NỘI DUNG:</strong> {request?.message}</p>

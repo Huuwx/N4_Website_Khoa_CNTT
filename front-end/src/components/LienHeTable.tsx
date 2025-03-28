@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Tag, Input, Select, DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
-import yeuCauLienHeService from "@/services/yeucaulienheService"; // ✅ Import đúng
-import type { Dayjs } from 'dayjs';
+import yeuCauLienHeService from "@/services/yeucaulienheService";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 
 // Định nghĩa interface cho dữ liệu yêu cầu liên hệ
 interface ContactRequest {
   id: number;
-  ngayLienHe: string;
+  createdAt: string;
   name: string;
   email: string;
   message: string;
@@ -28,15 +29,14 @@ export default function LienHeTable() {
 
   const fetchRequests = async () => {
     try {
-      const response = await yeuCauLienHeService.getAllYeuCauLienHe(); // ✅ Gọi API đúng
-
+      const response = await yeuCauLienHeService.getAllYeuCauLienHe();
       const contactData: ContactRequest[] = response.map((item) => ({
-        id: Number(item.id), 
-        ngayLienHe: item.ngayLienHe, 
+        id: Number(item.id),
+        createdAt: item.createdAt || new Date().toISOString(),
         name: item.name,
         email: item.email,
         message: item.message,
-        status: item.status, 
+        status: item.status,
       }));
 
       setData(contactData);
@@ -47,7 +47,9 @@ export default function LienHeTable() {
   };
 
   const handleEdit = (record: ContactRequest) => {
-    navigate(`/quan-ly-yeu-cau-lien-he/${record.id}`, { state: { request: record } });
+    navigate(`/quan-ly-yeu-cau-lien-he/${record.id}`, {
+      state: { request: record },
+    });
   };
 
   const handleSearch = () => {
@@ -64,21 +66,30 @@ export default function LienHeTable() {
     }
 
     if (searchDate) {
-      const formattedSearchDate = searchDate.format("D/M/YYYY");
-      filtered = filtered.filter((item) => item.ngayLienHe === formattedSearchDate);
+      const formattedSearchDate = searchDate.format("YYYY-MM-DD");
+      filtered = filtered.filter(
+        (item) =>
+          dayjs(item.createdAt).format("YYYY-MM-DD") === formattedSearchDate
+      );
     }
 
     setFilteredData(filtered);
   };
 
   const columns = [
-    { 
+    {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      render: (_: unknown, __: unknown, index: number) => index + 1 
+      render: (_: unknown, __: unknown, index: number) => index + 1,
     },
-    { title: "Ngày liên hệ", dataIndex: "ngayLienHe", key: "ngayLienHe" },
+    {
+      title: "Ngày liên hệ",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (createdAt: string) =>
+        dayjs(createdAt).format("DD/MM/YYYY HH:mm:ss"),
+    },
     { title: "Họ tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Nội dung", dataIndex: "message", key: "message" },
@@ -87,7 +98,15 @@ export default function LienHeTable() {
       dataIndex: "status",
       key: "status",
       render: (text: string) => (
-        <Tag color={text === "Chưa đọc" ? "red" : text === "Đang xử lý" ? "orange" : "green"}>
+        <Tag
+          color={
+            text === "Chưa đọc"
+              ? "red"
+              : text === "Đang xử lý"
+              ? "orange"
+              : "green"
+          }
+        >
           {text}
         </Tag>
       ),
@@ -109,7 +128,7 @@ export default function LienHeTable() {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
           QUẢN LÝ YÊU CẦU LIÊN HỆ
         </h1>
-  
+
         {/* Phần tìm kiếm */}
         <div className="flex justify-center gap-4 mb-6">
           <DatePicker
@@ -138,17 +157,17 @@ export default function LienHeTable() {
             Tìm kiếm
           </Button>
         </div>
-  
+
         {/* Bảng dữ liệu */}
         <div className="max-w-4xl mx-auto">
           <Table
             columns={columns}
             dataSource={filteredData}
             rowKey="id"
-            pagination={{ 
-              pageSize: 5, 
+            pagination={{
+              pageSize: 5,
               position: ["bottomCenter"],
-              className: "text-center"
+              className: "text-center",
             }}
             className="shadow-lg rounded-lg overflow-hidden"
           />

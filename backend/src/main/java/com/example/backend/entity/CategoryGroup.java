@@ -21,6 +21,16 @@ public class CategoryGroup {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String slug;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+
+    @Column(name = "page_url")
+    private String pageUrl;
+
     @ManyToMany(mappedBy = "categoryGroups", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Builder.Default
     @ToString.Exclude

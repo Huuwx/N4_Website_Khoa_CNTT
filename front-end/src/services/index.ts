@@ -4,7 +4,17 @@ const API_URL = 'http://localhost:8080/api';
 
 // const API_URL = 'https://32e5-117-5-40-137.ngrok-free.app/api';
 
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
 
+const subscribeTokenRefresh = (cb: (token: string) => void) => {
+  refreshSubscribers.push(cb);
+};
+
+const onTokenRefreshed = (token: string) => {
+  refreshSubscribers.map(cb => cb(token));
+  refreshSubscribers = [];
+};
 
 const createAxiosInstance = (baseURL: string) => {
   const instance = axios.create({
@@ -33,12 +43,50 @@ const createAxiosInstance = (baseURL: string) => {
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
-      if (error.response?.status === 403) {
-        // Clear stored tokens on forbidden response
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+      // Skip token refresh for refresh token requests to avoid infinite loops
+      const isRefreshRequest = error.config?.url?.includes('/refresh-token');
+      if (isRefreshRequest) {
+        return Promise.reject(error);
       }
+
+      // Handle 401 Unauthorized error
+      if (error.response?.status === 401) {
+        if (isRefreshing) {
+          // If token refresh is in progress, wait for the new token
+          return new Promise((resolve) => {
+            subscribeTokenRefresh((token) => {
+              error.config.headers.Authorization = `Bearer ${token}`;
+              resolve(instance(error.config));
+            });
+          });
+        }
+
+        isRefreshing = true;
+
+        try {
+          const response = await import('./authService').then(m => m.refreshToken());
+          const newAccessToken = response.data.accessToken;
+          isRefreshing = false;
+          onTokenRefreshed(newAccessToken);
+          
+          // Retry the original request with the new token
+          error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+          return instance(error.config);
+        } catch (refreshError) {
+          isRefreshing = false;
+          // If refresh token fails, redirect to login
+          localStorage.clear();
+          window.location.href = '#';
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // Handle 403 Forbidden error
+      if (error.response?.status === 403) {
+        localStorage.clear();
+        window.location.href = '#';
+      }
+
       return Promise.reject(error);
     }
   );

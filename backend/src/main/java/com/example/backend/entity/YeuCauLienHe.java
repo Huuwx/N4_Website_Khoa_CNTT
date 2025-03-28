@@ -23,5 +23,6 @@ public class YeuCauLienHe {
     private String stasus;
 
     @Column(updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

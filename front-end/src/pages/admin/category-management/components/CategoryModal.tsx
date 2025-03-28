@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Form, Input, Select, message } from 'antd';
-import { Category, CategoryGroup } from '../../../../services/categoryService';
+import { Category, CategoryGroup, CategoryType } from '../../../../services/categoryService';
 import categoryService from '../../../../services/categoryService';
 
 interface CategoryModalProps {
@@ -18,28 +18,33 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   onSuccess,
   mode,
   record,
-  categoryGroups = [], // Provide default empty array
+  categoryGroups = [],
 }) => {
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (visible) {
-      if (mode === 'edit' && record) {
-        form.setFieldsValue({
-          name: record.name,
-          categoryGroupIds: record.categoryGroups.map(group => group.id),
-        });
-      } else {
-        form.resetFields();
-      }
+  React.useEffect(() => {
+    if (visible && mode === 'edit' && record) {
+      form.setFieldsValue({
+        name: record.name,
+        slug: record.slug,
+        type: record.type,
+        pageUrl: record.pageUrl,
+        categoryGroupIds: record.categoryGroups.map(group => group.id),
+      });
+    } else {
+      form.resetFields();
     }
   }, [visible, mode, record, form]);
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+      
       const request = {
         name: values.name,
+        slug: values.slug,
+        type: values.type,
+        pageUrl: values.pageUrl,
         categoryGroupIds: values.categoryGroupIds,
       };
 
@@ -51,7 +56,6 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
         message.success('Category updated successfully');
       }
 
-      form.resetFields();
       onSuccess();
     } catch (error) {
       console.error('Failed to save category:', error);
@@ -61,19 +65,22 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 
   return (
     <Modal
-      title={`${mode === 'create' ? 'Tạo mới' : 'Chỉnh sửa'} danh mục`}
+      title={mode === 'create' ? 'Tạo mới danh mục' : 'Cập nhật danh mục'}
       open={visible}
+      onCancel={onClose}
       onOk={handleSubmit}
-      onCancel={() => {
-        form.resetFields();
-        onClose();
-      }}
-      destroyOnClose
+      width={600}
     >
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ name: '', categoryGroupIds: [] }}
+        initialValues={{ 
+          name: '', 
+          slug: '', 
+          type: CategoryType.ARTICLES,
+          pageUrl: '',
+          categoryGroupIds: [] 
+        }}
       >
         <Form.Item
           name="name"
@@ -81,6 +88,33 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
           rules={[{ required: true, message: 'Please input the category name!' }]}
         >
           <Input placeholder="Enter category name" />
+        </Form.Item>
+
+        <Form.Item
+          name="slug"
+          label="Slug"
+          rules={[{ required: true, message: 'Please input the category slug!' }]}
+        >
+          <Input placeholder="Enter category slug" />
+        </Form.Item>
+
+        <Form.Item
+          name="type"
+          label="Loại danh mục"
+          rules={[{ required: true, message: 'Please select the category type!' }]}
+        >
+          <Select>
+            <Select.Option value={CategoryType.ARTICLES}>Articles</Select.Option>
+            <Select.Option value={CategoryType.STATIC_PAGE}>Static Page</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="pageUrl"
+          label="URL trang"
+          rules={[{ required: true, message: 'Please input the page URL!' }]}
+        >
+          <Input placeholder="Enter page URL" />
         </Form.Item>
 
         <Form.Item

@@ -5,9 +5,9 @@ import com.example.backend.dto.article.ArticleRequest;
 import com.example.backend.dto.article.ArticleResponse;
 import com.example.backend.entity.Article;
 import com.example.backend.entity.ArticleStatus;
-import com.example.backend.entity.Category;
+import com.example.backend.entity.CategoryGroup;
 import com.example.backend.repository.ArticleRepository;
-import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.CategoryGroupRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class ArticleService {
@@ -25,17 +27,17 @@ public class ArticleService {
     private ArticleRepository articleRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryGroupRepository categoryGroupRepository;
 
     @Autowired
     private FileUploadService fileUploadService;
 
-    public Page<ArticleResponse> getArticles(int page, int size, Long categoryId, String search, String status, String sort) {
+    public Page<ArticleResponse> getArticles(int page, int size, Long categoryGroupId, String search, String status, String sort) {
         Pageable pageable;
         if (sort != null && !sort.isEmpty()) {
             String[] parts = sort.split(",");
             String field = parts[0];
-            Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("desc") 
+            Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("desc")
                 ? Sort.Direction.DESC : Sort.Direction.ASC;
             pageable = PageRequest.of(page, size, Sort.by(direction, field));
         } else {
@@ -43,8 +45,8 @@ public class ArticleService {
         }
 
         Page<Article> articles;
-        if (categoryId != null) {
-            articles = articleRepository.findByCategoryId(categoryId, pageable);
+        if (categoryGroupId != null) {
+            articles = articleRepository.findByCategoryGroupId(categoryGroupId, pageable);
         } else if (search != null && !search.isEmpty()) {
             articles = articleRepository.findByTitleContainingIgnoreCase(search, pageable);
         } else if (status != null && !status.isEmpty()) {
@@ -68,10 +70,10 @@ public class ArticleService {
         log.info("Starting article creation with request: {}", request);
         
         try {
-            log.info("Finding category with ID: {}", request.getCategoryId());
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-            log.info("Found category: {}", category.getName());
+            log.info("Finding category group with ID: {}", request.getCategoryGroupId());
+            CategoryGroup categoryGroup = categoryGroupRepository.findById(request.getCategoryGroupId())
+                    .orElseThrow(() -> new EntityNotFoundException("Category group not found"));
+            log.info("Found category group: {}", categoryGroup.getName());
 
             log.info("Building article entity with status: {}", request.getStatus());
             Article article = Article.builder()
@@ -79,7 +81,7 @@ public class ArticleService {
                     .content(request.getContent())
                     .thumbnailUrl(request.getThumbnailUrl())
                     .publishDate(request.getPublishDate())
-                    .category(category)
+                    .categoryGroup(categoryGroup)
                     .status(ArticleStatus.valueOf(request.getStatus().toUpperCase()))
                     .build();
 
@@ -111,14 +113,14 @@ public class ArticleService {
             fileUploadService.deleteFile(article.getThumbnailUrl());
         }
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+        CategoryGroup categoryGroup = categoryGroupRepository.findById(request.getCategoryGroupId())
+                .orElseThrow(() -> new EntityNotFoundException("Category group not found"));
 
         article.setTitle(request.getTitle());
         article.setContent(request.getContent());
         article.setThumbnailUrl(request.getThumbnailUrl());
         article.setPublishDate(request.getPublishDate());
-        article.setCategory(category);
+        article.setCategoryGroup(categoryGroup);
         article.setStatus(ArticleStatus.valueOf(request.getStatus().toUpperCase()));
 
         Article updatedArticle = articleRepository.save(article);
@@ -143,34 +145,27 @@ public class ArticleService {
         log.info("Successfully deleted article with ID: {}", id);
     }
 
-    private void updateArticleFromRequest(Article article, ArticleRequest request) {
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-
-        article.setTitle(request.getTitle());
-        article.setContent(request.getContent());
-        article.setThumbnailUrl(request.getThumbnailUrl());
-        article.setPublishDate(request.getPublishDate());
-        article.setCategory(category);
-        article.setStatus(ArticleStatus.valueOf(request.getStatus().toUpperCase()));
-    }
-
     private ArticleResponse mapToResponse(Article article) {
-        ArticleResponse.CategoryDto categoryDto = new ArticleResponse.CategoryDto(
-                article.getCategory().getId(),
-                article.getCategory().getName()
-        );
+        CategoryGroup categoryGroup = article.getCategoryGroup();
 
-        return new ArticleResponse(
-                article.getId(),
-                article.getTitle(),
-                article.getContent(),
-                article.getThumbnailUrl(),
-                article.getPublishDate(),
-                categoryDto,
-                article.getStatus(),
-                article.getCreatedAt(),
-                article.getUpdatedAt()
-        );
+        var categoryGroupDto = ArticleResponse.CategoryGroupDto.builder()
+                .id(categoryGroup.getId())
+                .name(categoryGroup.getName())
+                .slug(categoryGroup.getSlug())
+                .type(categoryGroup.getType())
+                .pageUrl(categoryGroup.getPageUrl())
+                .build();
+
+        return ArticleResponse.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .thumbnailUrl(article.getThumbnailUrl())
+                .publishDate(article.getPublishDate())
+                .categoryGroup(categoryGroupDto)
+                .status(article.getStatus())
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .build();
     }
 }

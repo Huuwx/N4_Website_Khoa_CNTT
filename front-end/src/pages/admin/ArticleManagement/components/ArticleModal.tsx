@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, DatePicker, message, Upload, Button } from 'antd';
-import { Article, ArticleRequest } from '../../../services/articleService';
-import articleService from '../../../services/articleService';
-import type { CategoryResponse } from '../../../services/categoryService';
+import { Article, ArticleRequest } from '../../../../services/articleService';
+import articleService from '../../../../services/articleService';
+import type { CategoryGroup } from '../../../../services/categoryService';
 import dayjs from 'dayjs';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import type { RcFile } from 'antd/es/upload';
 import type { UploadProps } from 'antd/es/upload';
-import uploadFile from '../../../services/uploadService';
+import uploadFile from '../../../../services/uploadService';
 
 interface ArticleModalProps {
   visible: boolean;
   article: Article | null;
-  categories: CategoryResponse[];
+  categoryGroups: CategoryGroup[];
   onClose: (refresh?: boolean) => void;
 }
 
@@ -30,7 +30,7 @@ const modules = {
   ]
 };
 
-const ArticleModal = ({ visible, article, categories, onClose }: ArticleModalProps) => {
+const ArticleModal = ({ visible, article, categoryGroups, onClose }: ArticleModalProps) => {
   const [form] = Form.useForm();
   const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
@@ -39,7 +39,7 @@ const ArticleModal = ({ visible, article, categories, onClose }: ArticleModalPro
     if (visible && article) {
       form.setFieldsValue({
         ...article,
-        categoryId: article.category.id,
+        categoryGroupId: article.categoryGroup.id,
         publishDate: dayjs(article.publishDate),
         status: article.status
       });
@@ -69,7 +69,6 @@ const ArticleModal = ({ visible, article, categories, onClose }: ArticleModalPro
 
     try {
       setUploading(true);
-      //console.log(file)
       const response = await uploadFile(file as File);
       
       const imageUrl = response.data.url;
@@ -91,7 +90,7 @@ const ArticleModal = ({ visible, article, categories, onClose }: ArticleModalPro
       const articleData: ArticleRequest = {
         title: values.title,
         thumbnailUrl: values.thumbnailUrl,
-        categoryId: values.categoryId,
+        categoryGroupId: values.categoryGroupId,
         publishDate: values.publishDate.format(),
         content: values.content,
         status: values.status
@@ -199,14 +198,14 @@ const ArticleModal = ({ visible, article, categories, onClose }: ArticleModalPro
         </Form.Item>
 
         <Form.Item
-          name="categoryId"
-          label="Danh mục"
-          rules={[{ required: true, message: 'Please select a category!' }]}
+          name="categoryGroupId"
+          label="Nhóm danh mục"
+          rules={[{ required: true, message: 'Please select a category group!' }]}
         >
           <Select>
-            {categories.map((category) => (
-              <Select.Option key={category.id} value={category.id}>
-                {category.name}
+            {categoryGroups.map((group) => (
+              <Select.Option key={group.id} value={group.id}>
+                {group.name}
               </Select.Option>
             ))}
           </Select>

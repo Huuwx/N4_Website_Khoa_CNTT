@@ -3,24 +3,24 @@ import { Button, Input, Select, Table, message, Tag } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import articleService from '../../services/articleService';
-import categoryService from '../../services/categoryService';
+import articleService from '../../../services/articleService';
+import categoryService from '../../../services/categoryService';
 import ArticleModal from './components/ArticleModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
-import type { Article } from '../../services/articleService';
-import { CategoryResponse } from '../../services/categoryService';
+import type { Article } from '../../../services/articleService';
+import { CategoryGroup } from '../../../services/categoryService';
 
 const { Search } = Input;
 
 const ArticleManagement = () => {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+  const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [selectedCategoryGroup, setSelectedCategoryGroup] = useState<number | undefined>();
   const [selectedStatus, setSelectedStatus] = useState<'DRAFT' | 'PUBLISHED' | undefined>();
   const [sortField, setSortField] = useState<string | undefined>();
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | undefined>();
@@ -34,7 +34,7 @@ const ArticleManagement = () => {
       const response = await articleService.getArticles({
         page: currentPage - 1,
         size: pageSize,
-        categoryId: selectedCategory,
+        categoryGroupId: selectedCategoryGroup,
         search: searchText,
         status: selectedStatus,
         sort: sortField ? `${sortField},${sortOrder === 'ascend' ? 'asc' : 'desc'}` : undefined
@@ -61,22 +61,22 @@ const ArticleManagement = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchCategoryGroups = async () => {
     try {
-      const response = await categoryService.getAllCategories();
-      setCategories(response);
+      const groupsResponse = await categoryService.getAllCategoryGroups();
+      setCategoryGroups(groupsResponse);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch categories';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch category groups';
       message.error(errorMessage);
     }
   };
 
   useEffect(() => {
     fetchArticles();
-  }, [currentPage, pageSize, searchText, selectedCategory, selectedStatus, sortField, sortOrder]);
+  }, [currentPage, pageSize, searchText, selectedCategoryGroup, selectedStatus, sortField, sortOrder]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategoryGroups();
   }, []);
 
   const handleEdit = (record: Article) => {
@@ -138,10 +138,12 @@ const ArticleManagement = () => {
       sorter: true,
     },
     {
-      title: 'Danh mục',
-      dataIndex: ['category', 'name'],
-      key: 'category',
-      sorter: true,
+      title: 'Nhóm danh mục',
+      dataIndex: ['categoryGroup', 'name'],
+      key: 'categoryGroup',
+      render: (_, record) => (
+        <Tag color="blue">{record.categoryGroup.name}</Tag>
+      ),
     },
     {
       title: 'Trạng thái',
@@ -202,13 +204,13 @@ const ArticleManagement = () => {
           style={{ width: 300 }}
         />
         <Select
-          placeholder="Lọc theo danh mục"
+          placeholder="Lọc theo nhóm danh mục"
           allowClear
           style={{ width: 200 }}
-          onChange={(value) => setSelectedCategory(value)}
-          options={categories.map((category) => ({
-            value: category.id,
-            label: category.name,
+          onChange={(value) => setSelectedCategoryGroup(value)}
+          options={categoryGroups.map((group) => ({
+            value: group.id,
+            label: group.name,
           }))}
         />
         <Select
@@ -243,7 +245,7 @@ const ArticleManagement = () => {
       <ArticleModal
         visible={isModalVisible}
         article={selectedArticle}
-        categories={categories}
+        categoryGroups={categoryGroups}
         onClose={handleModalClose}
       />
 

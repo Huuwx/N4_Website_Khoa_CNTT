@@ -21,6 +21,16 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String slug;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+
+    @Column(name = "page_url")
+    private String pageUrl;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "category_group_mapping",
@@ -31,20 +41,5 @@ public class Category {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<CategoryGroup> categoryGroups = new HashSet<>();
-
-    public void addCategoryGroup(CategoryGroup categoryGroup) {
-        if (categoryGroups == null) {
-            categoryGroups = new HashSet<>();
-        }
-        categoryGroups.add(categoryGroup);
-        categoryGroup.getCategories().add(this);
-    }
-
-    public void removeCategoryGroup(CategoryGroup categoryGroup) {
-        if (categoryGroups != null) {
-            categoryGroups.remove(categoryGroup);
-            categoryGroup.getCategories().remove(this);
-        }
-    }
 
 }

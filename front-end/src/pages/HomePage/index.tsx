@@ -127,7 +127,7 @@ const NotificationSection = () => {
         const response = await articleService.getArticles({
           page: 0,
           size: 10,
-          categoryId: 6,
+          categoryGroupId: 6, // sửa id trong db
           status: "PUBLISHED",
         });
         setArticles(response.data.content);
@@ -282,7 +282,7 @@ const NewsSection = () => {
         const response = await articleService.getArticles({
           page: 0,
           size: 3,
-          categoryId: 5,
+          categoryGroupId: 5, // sửa id trong db
           status: "PUBLISHED",
         });
         setArticles(response.data.content);

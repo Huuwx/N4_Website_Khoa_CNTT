@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
-import { Article } from '../../../services/articleService';
-import articleService from '../../../services/articleService';
+import { Article } from '../../../../services/articleService';
+import articleService from '../../../../services/articleService';
 
 interface DeleteConfirmModalProps {
   visible: boolean;

@@ -1,5 +1,6 @@
 package com.example.backend.dto.category;
 
+import com.example.backend.entity.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,9 @@ import java.util.Set;
 public class CategoryResponse {
     private Long id;
     private String name;
+    private String slug;
+    private CategoryType type;
+    private String pageUrl;
     private Set<CategoryGroupResponse> categoryGroups;
 
     @Data
@@ -22,5 +26,8 @@ public class CategoryResponse {
     public static class CategoryGroupResponse {
         private Long id;
         private String name;
+        private String slug;
+        private CategoryType type;
+        private String pageUrl;
     }
 }

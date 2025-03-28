@@ -28,8 +28,8 @@ public class ArticleRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private LocalDateTime publishDate;
 
-    @NotNull(message = "Category ID is required")
-    private Long categoryId;
+    @NotNull(message = "Category Group ID is required")
+    private Long categoryGroupId;
 
     @NotNull(message = "Status is required")
     private String status; // DRAFT or PUBLISHED

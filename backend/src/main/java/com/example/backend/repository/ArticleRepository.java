@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    Page<Article> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<Article> findByCategoryGroupId(Long categoryGroupId, Pageable pageable);
     Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
     Page<Article> findByStatus(ArticleStatus status, Pageable pageable);
 }

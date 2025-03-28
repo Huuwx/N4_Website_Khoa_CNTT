@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Space, Table, Button, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Table, message, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import categoryService, { Category, CategoryGroup } from '../../../services/categoryService';
+import categoryService, { Category, CategoryGroup, CategoryType } from '../../../services/categoryService';
 import CategoryModal from './components/CategoryModal.tsx';
 import CategoryGroupModal from './components/CategoryGroupModal.tsx';
 
@@ -22,14 +22,15 @@ const CategoryManagement: React.FC = () => {
         categoryService.getAllCategories(),
         categoryService.getAllCategoryGroups()
       ]);
-      
+
       setCategories(categoriesData);
       setCategoryGroups(groupsData);
     } catch (error) {
       console.error('Failed to fetch data:', error);
       message.error('Failed to fetch data');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -38,9 +39,25 @@ const CategoryManagement: React.FC = () => {
 
   const categoryColumns: ColumnsType<Category> = [
     {
-      title: 'Tên danh mục',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name',
+    },
+    {
+      title: 'Slug',
+      dataIndex: 'slug',
+      key: 'slug',
+    },
+    {
+      title: 'Loại',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type: CategoryType) => type === CategoryType.ARTICLES ? 'Articles' : 'Static Page',
+    },
+    {
+      title: 'URL trang',
+      dataIndex: 'pageUrl',
+      key: 'pageUrl',
     },
     {
       title: 'Nhóm danh mục',
@@ -49,10 +66,10 @@ const CategoryManagement: React.FC = () => {
       render: (groups: CategoryGroup[]) => groups.map(g => g.name).join(', '),
     },
     {
-      title: 'Hành động',
+      title: 'Thao tác',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle">
+        <Space>
           <Button type="link" onClick={() => {
             setSelectedCategory(record);
             setMode('edit');
@@ -75,15 +92,31 @@ const CategoryManagement: React.FC = () => {
 
   const categoryGroupColumns: ColumnsType<CategoryGroup> = [
     {
-      title: 'Tên nhóm danh mục',
+      title: 'Tên',
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Hành động',
+      title: 'Slug',
+      dataIndex: 'slug',
+      key: 'slug',
+    },
+    {
+      title: 'Loại',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type: CategoryType) => type === CategoryType.ARTICLES ? 'Articles' : 'Static Page',
+    },
+    {
+      title: 'URL trang',
+      dataIndex: 'pageUrl',
+      key: 'pageUrl',
+    },
+    {
+      title: 'Thao tác',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle">
+        <Space>
           <Button type="link" onClick={() => {
             setSelectedCategoryGroup(record);
             setMode('edit');
@@ -108,7 +141,7 @@ const CategoryManagement: React.FC = () => {
     <div className="p-6">
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Nhóm danh mục</h2>
+          <h2 className="text-xl font-bold">Quản lý nhóm danh mục</h2>
           <Button type="primary" onClick={() => {
             setMode('create');
             setSelectedCategoryGroup(null);
@@ -127,7 +160,7 @@ const CategoryManagement: React.FC = () => {
 
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Danh mục</h2>
+          <h2 className="text-xl font-bold">Quản lý danh mục</h2>
           <Button type="primary" onClick={() => {
             setMode('create');
             setSelectedCategory(null);

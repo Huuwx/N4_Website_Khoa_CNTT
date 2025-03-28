@@ -65,6 +65,9 @@ public class CategoryService {
         
         Category category = Category.builder()
                 .name(request.getName())
+                .slug(request.getSlug())
+                .type(request.getType())
+                .pageUrl(request.getPageUrl())
                 .categoryGroups(categoryGroups)
                 .build();
         
@@ -79,6 +82,9 @@ public class CategoryService {
         Set<CategoryGroup> categoryGroups = getCategoryGroups(request.getCategoryGroupIds());
         
         category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setType(request.getType());
+        category.setPageUrl(request.getPageUrl());
         category.setCategoryGroups(categoryGroups);
         
         return mapToResponse(categoryRepository.save(category));
@@ -119,6 +125,9 @@ public class CategoryService {
                                 return CategoryResponse.CategoryGroupResponse.builder()
                                         .id(group.getId())
                                         .name(group.getName())
+                                        .slug(group.getSlug())
+                                        .type(group.getType())
+                                        .pageUrl(group.getPageUrl())
                                         .build();
                             } catch (Exception e) {
                                 log.error("Error mapping category group: ID={}, Error={}",
@@ -134,6 +143,9 @@ public class CategoryService {
             CategoryResponse response = CategoryResponse.builder()
                     .id(category.getId())
                     .name(category.getName())
+                    .slug(category.getSlug())
+                    .type(category.getType())
+                    .pageUrl(category.getPageUrl())
                     .categoryGroups(groupResponses)
                     .build();
             

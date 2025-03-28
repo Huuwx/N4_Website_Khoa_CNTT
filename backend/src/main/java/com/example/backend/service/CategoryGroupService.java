@@ -32,6 +32,9 @@ public class CategoryGroupService {
     public CategoryGroupResponse createCategoryGroup(CategoryGroupRequest request) {
         CategoryGroup categoryGroup = CategoryGroup.builder()
                 .name(request.getName())
+                .slug(request.getSlug())
+                .type(request.getType())
+                .pageUrl(request.getPageUrl())
                 .build();
         return mapToResponse(categoryGroupRepository.save(categoryGroup));
     }
@@ -40,7 +43,12 @@ public class CategoryGroupService {
     public CategoryGroupResponse updateCategoryGroup(Long id, CategoryGroupRequest request) {
         CategoryGroup categoryGroup = categoryGroupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category group not found with id: " + id));
+        
         categoryGroup.setName(request.getName());
+        categoryGroup.setSlug(request.getSlug());
+        categoryGroup.setType(request.getType());
+        categoryGroup.setPageUrl(request.getPageUrl());
+        
         return mapToResponse(categoryGroupRepository.save(categoryGroup));
     }
 
@@ -61,6 +69,9 @@ public class CategoryGroupService {
         return CategoryGroupResponse.builder()
                 .id(categoryGroup.getId())
                 .name(categoryGroup.getName())
+                .slug(categoryGroup.getSlug())
+                .type(categoryGroup.getType())
+                .pageUrl(categoryGroup.getPageUrl())
                 .build();
     }
 }

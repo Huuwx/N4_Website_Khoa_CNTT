@@ -21,12 +21,12 @@ public class ArticleController {
     public ResponseEntity<ApiResponse<Page<ArticleResponse>>> getArticles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long categoryGroupId,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String sort) {
         try {
-            Page<ArticleResponse> articles = articleService.getArticles(page, size, categoryId, search, status, sort);
+            Page<ArticleResponse> articles = articleService.getArticles(page, size, categoryGroupId, search, status, sort);
             return ResponseEntity.ok(ApiResponse.<Page<ArticleResponse>>builder()
                     .status("SUCCESS")
                     .message("Articles retrieved successfully")

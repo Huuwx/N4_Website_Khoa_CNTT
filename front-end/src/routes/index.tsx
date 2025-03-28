@@ -9,7 +9,7 @@ import HomePage from '@/pages/HomePage';
 import LoginPage from '@/pages/LoginPage';
 
 // Lazy loaded pages
-const ArticleManagement = lazy(() => import('@/pages/ArticleManagement'));
+const ArticleManagement = lazy(() => import('@/pages/admin/ArticleManagement'));
 const ArticleDetail = lazy(() => import('@/pages/ArticleDetail'));
 const LecturerList = lazy(() => import('@/pages/LecturerList'));
 const LecturerDetail = lazy(() => import('@/pages/LecturerList/LecturerDetail'));
@@ -31,7 +31,6 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/lienheform" element={<LienHeForm refreshData={() => {}} />} />
         
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -43,14 +42,15 @@ function AppRoutes() {
           {/* Lecturer Routes */}
           <Route path="doi-ngu-giang-vien" element={<LecturerList />} />
           <Route path="doi-ngu-giang-vien/:id" element={<LecturerDetail />} />
-          
+          <Route path="/lienheform" element={<LienHeForm refreshData={() => {}} />} />
+
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
-            <Route path="teachers" element={<TeacherPage />} />
+            {/* <Route path="teachers" element={<TeacherPage />} /> */}
             <Route path="profile" element={<TeacherProfile />} />
-            <Route path="danhmuc" element={<DanhMucPage />} />
-            <Route path="images" element={<QuanLyAnhPage />} />
-            <Route path="config" element={<ConfigQLAnh />} />
+            {/* <Route path="danhmuc" element={<DanhMucPage />} /> */}
+            {/* <Route path="images" element={<QuanLyAnhPage />} /> */}
+            {/* <Route path="config" element={<ConfigQLAnh />} /> */}
             
           </Route>
 

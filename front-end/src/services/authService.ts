@@ -17,6 +17,29 @@ interface AuthResponse {
   };
 }
 
+export const refreshToken = async (): Promise<AuthResponse> => {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const response = await axiosInstance.post<AuthResponse>('/v1/auth/refresh-token', {
+      refreshToken
+    });
+    
+    if (response.data.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      // Optionally update refresh token if the backend provides a new one
+      if (response.data.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      }
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi refresh token:", error);
+    // If refresh token fails, logout user
+    logout();
+    throw error;
+  }
+};
+
 export const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
   try {
     const response = await axiosInstance.post<AuthResponse>('/v1/auth/login', credentials);

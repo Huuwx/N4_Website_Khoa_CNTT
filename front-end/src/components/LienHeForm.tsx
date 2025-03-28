@@ -9,9 +9,7 @@ interface ContactFormProps {
 
 interface FormDataType {
   name: string;
-  soDienThoai: string;
   email: string;
-  tieuDe: string;
   message: string;
 }
 
@@ -23,9 +21,7 @@ interface MessageType {
 export default function ContactForm({ refreshData }: ContactFormProps) {
   const [formData, setFormData] = useState<FormDataType>({
     name: "",
-    soDienThoai: "",
     email: "",
-    tieuDe: "",
     message: "",
   });
 
@@ -41,36 +37,27 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
     setLoading(true);
     setMessage(null);
   
-    const ngayLienHe = new Date().toLocaleDateString("vi-VN");  
-    const formDataWithDate = { 
-      ...formData, 
-      ngayLienHe, 
-      status: "Chưa đọc" as "Chưa đọc" | "Đang xử lý" | "Đã xử lý",
-      data: {}
+    const requestData = {
+      ...formData,
+      status: "Chưa đọc" as const
     };
-    
-    
-    
-  
+
     try {
-      const response = await yeuCauLienHeService.createYeuCauLienHe(formDataWithDate);
+      const response = await yeuCauLienHeService.createYeuCauLienHe(requestData);
       
       // Kiểm tra phản hồi từ API
-      if (response && response.message === "Created successfully") {
+      if (response) {
         setMessage({
           type: 'success',
           text: 'Gửi yêu cầu liên hệ thành công!'
         });
-      } else {
-        throw new Error(response?.message || "Lỗi không xác định");
+        setFormData({ name: "", email: "", message: "" });
+        refreshData();
       }
-    
-      setFormData({ name: "", soDienThoai: "", email: "", tieuDe: "", message: "" });
-      refreshData();
-    } catch (error: any) {
+    } catch (error) {
       setMessage({
         type: 'error',
-        text: error.message || 'Có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại.'
+        text: error instanceof Error ? error.message : 'Có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại.'
       });
       console.error("Lỗi khi gửi liên hệ:", error);
     } finally {
@@ -106,16 +93,6 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
                 required
               />
               <input
-                type="tel"
-                name="soDienThoai"
-                placeholder="SĐT"
-                value={formData.soDienThoai}
-                onChange={handleChange}
-                className="bg-white w-full border p-2 rounded mb-3"
-                pattern="[0-9]*"
-                required
-              />
-              <input
                 type="email"
                 name="email"
                 placeholder="Email"
@@ -123,14 +100,6 @@ export default function ContactForm({ refreshData }: ContactFormProps) {
                 onChange={handleChange}
                 className="bg-white w-full border p-2 rounded mb-3"
                 required
-              />
-              <input
-                type="text"
-                name="tieuDe"
-                placeholder="Tiêu đề"
-                value={formData.tieuDe}
-                onChange={handleChange}
-                className="bg-white w-full border p-2 rounded mb-3"
               />
               <textarea
                 name="message"

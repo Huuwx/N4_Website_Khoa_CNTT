@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dto.auth.AuthRequest;
 import com.example.backend.dto.auth.AuthResponse;
+import com.example.backend.dto.auth.RefreshTokenRequest;
 import com.example.backend.entity.User;
 import com.example.backend.entity.UserStatus;
 import com.example.backend.repository.UserRepository;
@@ -44,6 +45,37 @@ public class AuthService {
                 .username(user.getUsername())
                 .role(user.getRole())
                 .message("Login successful")
+                .build();
+    }
+
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        // Validate refresh token and extract username
+        String username = jwtService.extractUsername(refreshToken);
+        if (username == null) {
+            throw new ValidationException("Invalid refresh token");
+        }
+
+        // Get user details
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ValidationException("User not found"));
+
+        // Validate refresh token
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new ValidationException("Invalid refresh token");
+        }
+
+        // Generate new tokens
+        String newAccessToken = jwtService.generateAccessToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        return AuthResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .username(user.getUsername())
+                .role(user.getRole())
+                .message("Token refreshed successfully")
                 .build();
     }
 }

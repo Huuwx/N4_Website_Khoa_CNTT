@@ -1,29 +1,49 @@
 import { axiosInstance } from './index';
 
+export enum CategoryType {
+  ARTICLES = 'ARTICLES',
+  STATIC_PAGE = 'STATIC_PAGE'
+}
+
 export interface CategoryGroupResponse {
   id?: number;
   name: string;
+  slug: string;
+  type: CategoryType;
+  pageUrl: string;
 }
 
 export interface CategoryResponse {
   id?: number;
   name: string;
+  slug: string;
+  type: CategoryType;
+  pageUrl: string;
   categoryGroups: CategoryGroupResponse[];
 }
 
 export interface CategoryGroup {
   id?: number;
   name: string;
+  slug: string;
+  type: CategoryType;
+  pageUrl: string;
 }
 
 export interface Category {
   id?: number;
   name: string;
+  slug: string;
+  type: CategoryType;
+  pageUrl: string;
   categoryGroups: CategoryGroup[];
 }
 
 export interface CategoryRequest {
   name: string;
+  slug: string;
+  type: CategoryType;
+  pageUrl: string;
   categoryGroupIds: number[];
 }
 
